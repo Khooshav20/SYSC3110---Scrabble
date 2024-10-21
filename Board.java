@@ -33,12 +33,12 @@ public class Board {
      * @param score The score for the word
      * @return A formatted string for the move in "WORD xy +score" notation
      */
-    public String playWord(String word, int row, char col, String direction, int score) {
+    public String playMove(String word, int row, char col, String direction, int score) {
         // Convert column letter to a 0-based index
         int colIndex = Character.toUpperCase(col) - 'A';
         int rowIndex = row - 1; // Convert to 0-based row index
 
-        if (!isValidPlacement(word, rowIndex, colIndex, direction)) {
+        if (!isValidMove(word, rowIndex, colIndex, direction)) {
             return "Invalid move";
         }
 
@@ -66,7 +66,7 @@ public class Board {
      * @param direction "H" for horizontal, "V" for vertical
      * @return true if the placement is valid, false otherwise
      */
-    private boolean isValidPlacement(String word, int row, int col, String direction) {
+    private boolean isValidMove(String word, int row, int col, String direction) {
         if (direction.equals("H")) {
             return col + word.length() <= 15 && row >= 0 && row < 15;
         } else if (direction.equals("V")) {
