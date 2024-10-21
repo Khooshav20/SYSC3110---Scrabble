@@ -117,4 +117,22 @@ public class Player {
         }
         return letters.toString();
     }
+
+    /**
+     * Returns the player's total score at the end of the game. The score is reduced
+     * by the sum of the values of the player's unplayed tiles.
+     *
+     * @return the player's final score after adjusting for unplayed tiles
+     */
+    public int getTotalScore() {
+        int unplayedTilePenalty = 0;
+
+        // Sum the values of all the tiles left in the player's rack
+        for (Tile tile : rack) {
+            unplayedTilePenalty += tile.getScore();
+        }
+
+        // The player's total score is reduced by the unplayed tile values
+        return score - unplayedTilePenalty;
+    }
 }
