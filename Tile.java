@@ -38,4 +38,14 @@ public class Tile extends Square {
     public int getScore() {
         return score;
     }
+
+    /**
+     * Returns whether a Tile is equal to another Tile.
+     * @return whether Tile is equal to another Tile.
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof Tile)) return false;
+        Tile otherTile = (Tile) o;
+        return otherTile.score == this.score && otherTile.letter == this.letter;
+    }
 }
