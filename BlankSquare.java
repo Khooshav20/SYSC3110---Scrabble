@@ -1,10 +1,14 @@
+/**
+ * Square indicating that the space is blank.
+ * @author Marc Fernandes
+ * @version 20/10/2024
+ */
+
 public class BlankSquare {
     
-    /**
-     * Square indicating that the space is blank.
-     * @author Marc Fernandes
+    /*
+     * Empty constructor method
      */
     public BlankSquare() {
-        super();
     }
 }

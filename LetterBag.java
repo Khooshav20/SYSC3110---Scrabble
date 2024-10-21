@@ -3,6 +3,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+/**
+ * The LetterBag class creates a bag of shuffled Tiles to use for the Scrabble game.
+ * Allows users to create a bag of Tiles, swaps Tiles and get multiple Tiles at once.
+ * 
+ * @author Marc Fernandes
+ * @version 20/10/2024
+ */
 
 public class LetterBag {
     private ArrayList<Tile> letters;
@@ -11,7 +18,6 @@ public class LetterBag {
      * Creates a new LetterBag containing every tile to use for the game.
      * 
      * @throws FileNotFoundException if tiles.txt is not found in the same folder
-     * @author Marc Fernandes
      */
     public LetterBag() throws FileNotFoundException {
         // read from tiles.txt and add every tile
@@ -33,8 +39,6 @@ public class LetterBag {
 
     /**
      * Shuffles the list of tiles in the bag.
-     * 
-     * @author Marc Fernandes
      */
     private void shuffle() {
         Random r = new Random();
@@ -57,7 +61,6 @@ public class LetterBag {
      * 
      * @param tiles the tiles to swap with the bag
      * @return the new tiles swapped from the bag
-     * @author Marc Fernandes
      */
     public Tile[] swapTiles(Tile[] tiles) {
         // swapping when theres less than 7 letters in the bag is not allowed
@@ -83,7 +86,6 @@ public class LetterBag {
      * num tiles.
      * @param num the amount of tiles to take out of the bag
      * @return a list of tiles pulled from the bag
-     * @author Marc Fernandes
      */
     public Tile[] getTiles(int num) {
         // initialize a new array of tiles length num
@@ -99,7 +101,6 @@ public class LetterBag {
     /**
      * Gets the size of the bag.
      * @return the size of the bag
-     * @author Marc Fernandes
      */
     public int getSize() {
         return this.letters.size();
