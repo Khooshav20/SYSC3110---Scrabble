@@ -92,4 +92,29 @@ public class Player {
     public int getScore() {
         return score;
     }
+
+    /**
+     * Returns the number of tiles in the player's rack.
+     *
+     * @return the number of tiles currently in the player's rack
+     */
+    public int getNumTiles() {
+        return rack.size();
+    }
+
+    /**
+     * Return the player's current rack of letters.
+     *
+     * @return a string representing the letters on the Player's rack
+     */
+    public String getTiles() {
+        StringBuilder letters = new StringBuilder();
+        for (int i = 0; i < rack.size(); i++) {
+            letters.append(rack.get(i).getLetter());
+            if (i < rack.size() - 1) {
+                letters.append(", ");
+            }
+        }
+        return letters.toString();
+    }
 }
