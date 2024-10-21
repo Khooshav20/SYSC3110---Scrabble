@@ -3,7 +3,7 @@
  * @author Marc Fernandes
  */
 
-public abstract class Square {
+public class Square {
     /*
      * Empty square constructor
      */
@@ -11,4 +11,9 @@ public abstract class Square {
 
     }
 
+    public char[] getLetter() {
+    }
+
+    public void setLetter(char c) {
+    }
 }
