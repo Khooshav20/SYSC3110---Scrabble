@@ -1,5 +1,7 @@
 import java.util.*;
 
+import javax.print.attribute.IntegerSyntax;
+
 class ScrabbleGame{
     private LetterBag letterBag;
     private Player[] players;
@@ -73,6 +75,8 @@ class ScrabbleGame{
                         move = scanner.nextLine();
                     } else {
                         Tile[] moveTiles = players[currentPlayer].removeLetters(letters);
+
+                        //not sure how this will work exactly
                         if (board.isValidPlacement(moveTiles, s[1])){
                             int score =  board.playWord(moveTiles, s[1]);
                             players[currentPlayer].addScore(score);
@@ -103,10 +107,43 @@ class ScrabbleGame{
                 currentPlayer = -1;
                 break;
             }
+            currentPlayer = (currentPlayer + 1) % numPlayers;
         }
 
-        //end game
+        //handle score penalties
+        int totalPenalty = 0;
+        for (int i = 0; i < numPlayers; i++){
+            if (i != currentPlayer){
+                int penalty = players[i].getPenalty();
+                totalPenalty += penalty;
+                players[i].addScore(-penalty);
+            }
+        }
+        if (currentPlayer >= 0) players[currentPlayer].addScore(totalPenalty);
+
+        //obtain scores
+        Integer[] scores = new Integer[numPlayers];
+        for (int i = 0; i < numPlayers; i++){
+            scores[i] = (players[i].getScore());
+        }
+
+        //output leaderboard
+        System.out.println("Final Leaderboard:");
+        int previousPlacement = 1;
+        int previousScore = Collections.min(Arrays.asList(scores));
+        for (int i = 1; i <= numPlayers; i++){
+            int score = Collections.max(Arrays.asList(scores));
+            int index = findIndex(scores, score);
+            if (previousScore == score){
+                System.out.println(previousPlacement + ": Player " + (index + 1));
+            } else {
+                System.out.println(i + ": Player " + (index + 1));
+                previousPlacement = i;
+                previousScore = score;
+            }
+        }
     }
+
 
     private boolean isRightFormat(String move){
         String[] s = move.split(" ");
@@ -145,11 +182,17 @@ class ScrabbleGame{
 
         return true;
     }
+    
 
     private boolean onlyUppercaseLetters(String s){
         for (int i = 0; i < s.length(); i++){
             if (s.charAt(i) < 'A' || s.charAt(i) > 'Z') return false;
         }
         return true;
-    } 
+    }
+    
+    private int findIndex(Integer[] a, int value){
+        for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
+        return -1;
+    }
 }
