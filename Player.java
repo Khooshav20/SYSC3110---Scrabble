@@ -119,12 +119,12 @@ public class Player {
     }
 
     /**
-     * Returns the player's total score at the end of the game. The score is reduced
-     * by the sum of the values of the player's unplayed tiles.
+     * Returns the player's total penalty at the end of the game. The penalty is
+     * calculated by the sum of the values of the player's unplayed tiles.
      *
-     * @return the player's final score after adjusting for unplayed tiles
+     * @return the summation of the player's unplayed tiles scores
      */
-    public int getTotalScore() {
+    public int getPenalty() {
         int unplayedTilePenalty = 0;
 
         // Sum the values of all the tiles left in the player's rack
@@ -132,7 +132,7 @@ public class Player {
             unplayedTilePenalty += tile.getScore();
         }
 
-        // The player's total score is reduced by the unplayed tile values
-        return score - unplayedTilePenalty;
+        // The player's total unplayed tile values
+        return unplayedTilePenalty;
     }
 }
