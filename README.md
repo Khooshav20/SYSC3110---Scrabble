@@ -36,7 +36,7 @@ File Descriptions
 
 - Khooshav Bundhoo <br>
  •Board.java <br>
- •Readme.txt <br>
+ •README.md <br>
  •Documentation <br>
 
 - Lucas Warburton <br>
