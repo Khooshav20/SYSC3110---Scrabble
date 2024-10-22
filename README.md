@@ -34,29 +34,25 @@ File Descriptions
 •Letterbag.java <br>
 •Square.java <br>
 
-- Khooshav Bundhoo
- •Board.java
- •Readme.txt
- •Documentation
+- Khooshav Bundhoo <br>
+ •Board.java <br>
+ •Readme.txt <br>
+ •Documentation <br>
 
-- Lucas Warburton
- •SrabbleGame.java
+- Lucas Warburton <br>
+ •SrabbleGame.java <br>
   
-- Alexander Gardiner
- •Player.java
+- Alexander Gardiner <br>
+ •Player.java <br>
 
 
 How to run?
 
- •Install IntelliJ IDEA
- 
- •Open IntelliJ IDEA and choose Get from Version control
- 
- •In the URL section, paste this link: https://github.com/Khooshav20/SYSC3110---Scrabble.git
- 
- •Choose your directory and then click on clone
-
- •Run the main from ScrabbleGame.java
+ •Install IntelliJ IDEA <br>
+ •Open IntelliJ IDEA and choose Get from Version control <br>
+ •In the URL section, paste this link: https://github.com/Khooshav20/SYSC3110---Scrabble.git <br>
+ •Choose your directory and then click on clone <br>
+ •Run the main from ScrabbleGame.java <br>
 
  
 Once done, You are good to go!! Have a great game!
