@@ -40,7 +40,7 @@ File Descriptions
  •Documentation <br>
 
 - Lucas Warburton <br>
- •SrabbleGame.java <br>
+ •ScrabbleGame.java <br>
   
 - Alexander Gardiner <br>
  •Player.java <br>
