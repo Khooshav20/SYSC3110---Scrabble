@@ -8,7 +8,7 @@ import java.util.Scanner;
  * The LetterBag class creates a bag of shuffled Tiles to use for the Scrabble game.
  * Allows users to create a bag of Tiles, swaps Tiles and get multiple Tiles at once.
  * 
- * @author Marc Fernandes
+ * @author Marc Fernandes (101288346)
  * @version 20/10/2024
  */
 

@@ -1,6 +1,6 @@
 /**
  * Square indicating that the space is blank.
- * @author Marc Fernandes
+ * @author Marc Fernandes (101288346)
  * @version 22/10/2024
  */
 
