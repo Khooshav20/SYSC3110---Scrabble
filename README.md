@@ -30,9 +30,9 @@ File Descriptions
 
 #Responsibilities:
 - Marc Fernandes
- •Tile.java
- •Letterbag.java
- •Square.java
+•Tile.java
+•Letterbag.java
+•Square.java
 
 - Khooshav Bundhoo
  •Board.java
