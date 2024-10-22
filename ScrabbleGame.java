@@ -5,9 +5,8 @@
  * @version 22/10/2024
  */
 
- import java.io.FileNotFoundException;
+import java.io.FileNotFoundException;
 import java.util.*;
-import javax.print.attribute.IntegerSyntax;
 
 class ScrabbleGame{
     private LetterBag letterBag;
