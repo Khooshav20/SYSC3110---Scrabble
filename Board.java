@@ -18,7 +18,7 @@ public class Board {
         board = new Square[15][15];
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                board[i][j] = new Square();  // Initialize each square as empty
+                board[i][j] = new BlankSquare();  // Initialize each square as empty
             }
         }
     }

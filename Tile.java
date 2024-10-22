@@ -2,10 +2,10 @@
  * The Tile class keeps track of the letter and score of a particular tile.
  * 
  * @author Marc Fernandes
- * @version 20/10/2024
+ * @version 22/10/2024
  */
 
-public class Tile extends Square {
+public class Tile implements Square {
     private char letter;
     private int score;
 
