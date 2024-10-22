@@ -29,10 +29,10 @@ File Descriptions
 - Tile.java: Represents an individual Scrabble tile, including its letter and point value.
 
 #Responsibilities:
-- Marc Fernandes
-•Tile.java
-•Letterbag.java
-•Square.java
+- Marc Fernandes <br>
+•Tile.java <br>
+•Letterbag.java <br>
+•Square.java <br>
 
 - Khooshav Bundhoo
  •Board.java
