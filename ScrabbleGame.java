@@ -5,7 +5,8 @@
  * @version 22/10/2024
  */
 
- import java.util.*;
+ import java.io.FileNotFoundException;
+import java.util.*;
 import javax.print.attribute.IntegerSyntax;
 
 class ScrabbleGame{
@@ -16,14 +17,18 @@ class ScrabbleGame{
     /**
      * Creates an instance of ScrabbleGame, causing the game of scrabble to start.
      */
-    public ScrabbleGame(){
+    public ScrabbleGame() throws FileNotFoundException {
         letterBag = new LetterBag();
         Scanner scanner = new Scanner(System.in);
 
         int numPlayers = -1;
         while (numPlayers > 4 || numPlayers < 2){
             System.out.println("How many players are playing? (2-4)");
-            if (scanner.hasNextInt()) numPlayers = scanner.nextInt();
+            String line = scanner.nextLine();
+
+            if (line.matches("[2-4]")) {
+                numPlayers = Integer.parseInt(line);
+            }
         } 
         players = new Player[numPlayers];
         for (int i = 0; i < numPlayers; i++){
@@ -46,20 +51,28 @@ class ScrabbleGame{
             System.out.println(board);
             System.out.println("\nPlayer " + (currentPlayer+1) + "'s tiles: " + players[currentPlayer].getTiles());
 
-            int choice;
+            int choice = 0;
             if (letterBag.getSize() > 0){
-                System.out.println("Would you like to play a word (1), pass (2), or exchange tiles (3)?");
-                choice = scanner.nextInt();
-                while (choice > 3 || choice < 1){
-                    System.out.println("Invalid input. Would you like to play a word (1), exchange tiles (2), or pass (3)?");
-                    choice = scanner.nextInt();
+                while (choice == 0) {
+                    System.out.println("Would you like to play a word (1), pass (2), or exchange tiles (3)?");
+                    String line = scanner.nextLine();
+        
+                    if (line.matches("[1-3]")) {
+                        choice = Integer.parseInt(line);
+                    } else {
+                        System.out.print("Invalid input. ");
+                    }
                 }
             } else {
-                System.out.println("Would you like to play a word (1), or pass (2)?");
-                choice = scanner.nextInt();
-                while (choice > 2 || choice < 1){
-                    System.out.println("Invalid input. Would you like to play a word (1), or pass (2)?");
-                    choice = scanner.nextInt();
+                while (choice == 0) {
+                    System.out.println("Would you like to play a word (1), or pass (2)?");
+                    String line = scanner.nextLine();
+        
+                    if (line.matches("[1-2]")) {
+                        choice = Integer.parseInt(line);
+                    } else {
+                        System.out.print("Invalid input. ");
+                    }
                 }
             }
 
@@ -70,24 +83,32 @@ class ScrabbleGame{
                 System.out.println("Your move: ");
                 String move = scanner.nextLine();
                 while (true){
-                    String[] s = move.split(" "); 
-                    String letters = "";
-                    for (int i = 0; i < s[0].length(); i++){
-                        if (s[0].charAt(i) == '('){
-                            for (; i < s[0].length(); i++){
-                                if (s[0].charAt(i) == ')') break;
-                            }
-                        } else letters = letters + s[0].charAt(i);
+                    while (!isRightFormat(move)) {
+                        System.out.println("Invalid format: ");
+                        move = scanner.nextLine();
                     }
-                    if (!isRightFormat(move) || !players[currentPlayer].hasLetters(letters)){
+
+                    String[] s = move.split(" "); 
+                    String word = s[0];
+                    String location = s[1];
+                    String letters = "";
+                    for (int i = 0; i < word.length(); i++){
+                        if (word.charAt(i) == '('){
+                            for (; i < word.length(); i++){
+                                if (word.charAt(i) == ')') break;
+                            }
+                        } else letters = letters + word.charAt(i);
+                    }
+
+                    if (!players[currentPlayer].hasLetters(letters)){
                         System.out.println("Invalid format: ");
                         move = scanner.nextLine();
                     } else {
                         Tile[] moveTiles = players[currentPlayer].removeLetters(letters);
 
                         //not sure how this will work exactly
-                        if (board.isValidPlacement(moveTiles, s[1])){
-                            int score =  board.playWord(moveTiles, s[1]);
+                        if (board.isValidMove(moveTiles, location)){
+                            int score =  board.playMove(moveTiles, location);
                             players[currentPlayer].addScore(score);
                             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(letters.length(), letterBag.getSize())));
                             break;
@@ -118,6 +139,8 @@ class ScrabbleGame{
             }
             currentPlayer = (currentPlayer + 1) % numPlayers;
         }
+
+        scanner.close();
 
         //handle score penalties
         int totalPenalty = 0;
