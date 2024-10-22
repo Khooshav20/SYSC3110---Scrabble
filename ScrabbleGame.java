@@ -223,4 +223,12 @@ class ScrabbleGame{
         for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
         return -1;
     }
+
+    public static void main(String args[]) {
+        try {
+            new ScrabbleGame();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
