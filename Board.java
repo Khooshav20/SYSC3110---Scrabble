@@ -152,6 +152,24 @@ public class Board {
             return false;
         }
 
+        if (location[DIRECTION] == HORIZONTAL){
+            for (int i = 0; i < word.length(); i++){
+                if (Character.isLowerCase(word.charAt(i))){
+                    if (board[location[ROW]][location[COLUMN] + i].getLetter() != word.charAt(i) - 0x20) return false;
+                } else {
+                    if (board[location[ROW]][location[COLUMN] + i] instanceof Tile) return false;
+                }
+            }
+        } else {
+            for (int i = 0; i < word.length(); i++){
+                if (Character.isLowerCase(word.charAt(i))){
+                    if (board[location[ROW] + i][location[COLUMN]].getLetter() != word.charAt(i) - 0x20) return false;
+                } else {
+                    if (board[location[ROW] + i][location[COLUMN]] instanceof Tile) return false;
+                }
+            }
+        }
+
         if (board[7][7] instanceof Tile) {
             boolean isConnected = false;
             if (location[DIRECTION] == HORIZONTAL) {
@@ -203,7 +221,6 @@ public class Board {
                 }
             }
             if (!isConnected) {
-                System.out.println("NOT CONNECTED !!!!");
                 return isConnected;
             }
         }

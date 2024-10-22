@@ -42,19 +42,19 @@ class ScrabbleGame{
         int currentPlayer = 0;
 
         while (true){
-            System.out.println("The bag has " + letterBag.getSize() + " tiles remaining.");
+            System.out.println("The bag has " + letterBag.getSize() + " tiles remaining.\n");
             System.out.println("Current scores:");
             for (int i = 0; i < numPlayers; i++){
                 System.out.println("Player " + (i + 1) + "'s score: " + players[i].getScore());
             }
-            System.out.println("Player " + (currentPlayer + 1) + "'s turn:\n");
+            System.out.println("\nPlayer " + (currentPlayer + 1) + "'s turn:\n");
             System.out.println(board);
-            System.out.println("\nPlayer " + (currentPlayer+1) + "'s tiles: " + players[currentPlayer].getTiles());
+            System.out.println("Player " + (currentPlayer+1) + "'s tiles: " + players[currentPlayer].getTiles());
 
             int choice = 0;
             if (letterBag.getSize() > 0){
                 while (choice == 0) {
-                    System.out.println("Would you like to play a word (1), pass (2), or exchange tiles (3)?");
+                    System.out.println("\nWould you like to play a word (1), pass (2), or exchange tiles (3)?");
                     String line = scanner.nextLine();
         
                     if (line.matches("[1-3]")) {
@@ -102,17 +102,17 @@ class ScrabbleGame{
                     }
 
                     if (!players[currentPlayer].hasLetters(letters)){
-                        System.out.println("You dont have those letters: ");
+                        System.out.println("You don't have those letters: ");
                         move = scanner.nextLine();
                     } else {
                         Tile[] moveTiles = players[currentPlayer].removeLetters(letters);
 
                         //not sure how this will work exactly
                         if (board.isValidMove(moveTiles, word, location)){
-                            System.out.println("your move is so valid!!!!!");
                             int score =  board.playMove(moveTiles, word, location);
                             players[currentPlayer].addScore(score);
                             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(letters.length(), letterBag.getSize())));
+                            System.out.println("Player " + (currentPlayer + 1) + " played " + word.toUpperCase() + " for " + score + " points.");
                             break;
                         } else {
                             players[currentPlayer].addTiles(moveTiles);
@@ -171,12 +171,14 @@ class ScrabbleGame{
             int score = Collections.max(Arrays.asList(scores));
             int index = findIndex(scores, score);
             if (previousScore == score){
-                System.out.println(previousPlacement + ": Player " + (index + 1));
+                System.out.println(previousPlacement + ": Player " + (index + 1) + " with a score of " + players[index].getScore());
             } else {
-                System.out.println(i + ": Player " + (index + 1));
-                previousPlacement = i;
+                System.out.println(i + ": Player " + (index + 1) + " with a score of " + players[index].getScore());
+                previousPlacement = i + 1;
                 previousScore = score;
             }
+            players[index].addScore(-10000);
+            scores[index] -= 10000;
         }
     }
 
