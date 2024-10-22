@@ -11,6 +11,8 @@ import java.util.Scanner;
  * - For vertical words, the notation is column first then row (e.g., "K15").
  *
  * @author Khooshav Bundhoo (101132063)
+ * @author Marc Fernandes (101288346)
+ * @author Lucas Warburton (101276823)
  */
 public class Board {
     private Square[][] board;
@@ -47,11 +49,9 @@ public class Board {
     /**
      * Places a word on the board with appropriate notation.
      *
-     * @param word The word to place
-     * @param row The starting row (1-based, i.e. 1-15)
-     * @param col The starting column (1-based, i.e. 1-15 corresponding to A-O)
-     * @param direction "H" for horizontal, "V" for vertical
-     * @param score The score for the word
+     * @param tiles the tiles which will be new on the board
+     * @param word the word to be played
+     * @param l the location formatted in Scrabble notation
      * @return A formatted string for the move in "WORD xy +score" notation
      */
     public int playMove(Tile[] tiles, String word, String l) {
@@ -139,10 +139,9 @@ public class Board {
     /**
      * Validates the placement of the word on the board.
      *
-     * @param word The word to place
-     * @param row The starting row (0-based index)
-     * @param col The starting column (0-based index)
-     * @param direction "H" for horizontal, "V" for vertical
+     * @param tiles the tiles which will be new on the board
+     * @param word the word to be played
+     * @param l the location formatted in Scrabble notation
      * @return true if the placement is valid, false otherwise
      */
     public boolean isValidMove(Tile[] tiles, String word, String l) {
