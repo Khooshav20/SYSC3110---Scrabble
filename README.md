@@ -24,14 +24,14 @@ File Descriptions
 - Board.java: Manages the Scrabble board and handles tile placement and validation.
 - LetterBag.java: Manages the bag of Scrabble tiles, ensuring randomness when players draw tiles.
 - Player.java: Represents a player in the game, including their score, tiles, and turn logic.
-- ScrabbleGame.java: Main game logic, orchestrating the flow of the game, player turns, and interactions between the board and players.
+- ScrabbleGame.java: Main game logic, player turns, and interactions between the board and players.
 - Square.java: Represents a square on the Scrabble board, potentially containing a tile.
 - Tile.java: Represents an individual Scrabble tile, including its letter and point value.
 
 #Responsibilities:
 - Marc Fernandes <br>
 •Tile.java <br>
-•Letterbag.java <br>
+•LetterBag.java <br>
 •Square.java <br>
 
 - Khooshav Bundhoo <br>
