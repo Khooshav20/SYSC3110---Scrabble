@@ -97,23 +97,27 @@ class ScrabbleGame{
                             for (; i < word.length(); i++){
                                 if (word.charAt(i) == ')') break;
                             }
-                        } else letters = letters + word.charAt(i);
+                        } else if (Character.isUpperCase(word.charAt(i)))
+                            letters = letters + word.charAt(i);
                     }
 
                     if (!players[currentPlayer].hasLetters(letters)){
-                        System.out.println("Invalid format: ");
+                        System.out.println("You dont have those letters: ");
                         move = scanner.nextLine();
                     } else {
                         Tile[] moveTiles = players[currentPlayer].removeLetters(letters);
 
                         //not sure how this will work exactly
-                        if (board.isValidMove(moveTiles, location)){
-                            int score =  board.playMove(moveTiles, location);
+                        if (board.isValidMove(moveTiles, word, location)){
+                            System.out.println("your move is so valid!!!!!");
+                            int score =  board.playMove(moveTiles, word, location);
                             players[currentPlayer].addScore(score);
                             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(letters.length(), letterBag.getSize())));
                             break;
                         } else {
                             players[currentPlayer].addTiles(moveTiles);
+                            System.out.println("Invalid move: ");
+                            move = scanner.nextLine();
                         }
                     }
                 }
@@ -190,21 +194,35 @@ class ScrabbleGame{
         if (s.length != 2) return false;
 
         //check if the first parameter is a valid word input
-        String word = s[0];
-        for (int i = 0; i < word.length(); i++){
-            if (word.charAt(i) == '('){ //enter paranthesis
-                for (; i < word.length(); i++){
-                    if (word.charAt(i) > 'Z' || word.charAt(i) < 'A'){ //if not letter
-                        if (word.charAt(i) == ')') break;
+        for (int i = 0; i < s[0].length(); i++){
+            if (s[0].charAt(i) == '('){ //enter paranthesis
+                for (; i < s[0].length(); i++){ 
+                    if (s[0].charAt(i) > 'Z' || s[0].charAt(i) < 'A'){ //if not letter
+                        if (s[0].charAt(i) == ')') break;
                         else return false;
                     }
                 }
-            } else if (word.charAt(i) < 'A' || word.charAt(i) > 'Z') return false; //if not letter
+            } else if ((s[0].charAt(i) < 'A' || s[0].charAt(i) > 'Z') && (s[0].charAt(i) < 'a' || s[0].charAt(i) > 'z')) return false;
         }
 
-        //check if the second parameter includes either a valid (row and column) pair or (column and row) pair
-        String location = s[1];
-        return location.matches("([1-9]|1[0-5])[A-O]|[A-O]([1-9]|1[0-5])");
+        //check if the second parameter includes a valid row and column
+        if (s[1].length() == 2){
+            if ((s[1].charAt(0) <= '9') && (s[1].charAt(0) >= '1')){
+                if ((s[1].charAt(1) < 'A') || (s[1].charAt(1) > 'O')) return false;
+            } 
+            else if ((s[1].charAt(0) >= 'A') && (s[1].charAt(0) <= 'O')){
+                if (!((s[1].charAt(1) <= '9') && (s[1].charAt(1) >= '1'))) return false;
+            }
+        } else if (s[1].length() == 3){
+            if ((s[1].charAt(0) <= '9') && (s[1].charAt(0) > '0')){
+                if (!(((s[1].charAt(0) <= '5') && (s[1].charAt(0) >= '0')) && ((s[1].charAt(2) >= 'A') && (s[1].charAt(2) <= 'O')))) return false;
+            } 
+            else if ((s[1].charAt(0) >= 'A') && (s[1].charAt(0) <= 'O')){
+                if (!(((s[1].charAt(1) >= '1') && (s[1].charAt(1) <= '9')) && ((s[1].charAt(2) >= '0') && (s[1].charAt(2) <= '5')))) return false;
+            }
+        } else return false;
+
+        return true;
     }
     
 

@@ -1,163 +1,324 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
  * Represents a 15x15 Scrabble board with functionality to place words
  * either horizontally or vertically. The board uses a 2D array of Square objects.
  * Words are placed based on the Scrabble coordinate system:
+ * - For horizontal words, the notation is row first then column (e.g., "15K").
+ * - For vertical words, the notation is column first then row (e.g., "K15").
  *
  * @author Khooshav Bundhoo (101132063)
  */
-
 public class Board {
-    // Represents a move on the board, indicating whether it's horizontal or vertical, and the starting position.
-    class Move {
-        boolean isHorizontal;  // false = vertical, true = horizontal
-        int row;    // Row of the move (1-based, 1 to 15)
-        int col;    // Column of the move (1-based, A=1, B=2, ..., O=15)
-
-        // Constructor for Move class
-        Move(boolean isHorizontal, int row, int col) {
-            this.isHorizontal = isHorizontal;
-            this.row = row;
-            this.col = col;
-        }
-    }
-
-    // The Scrabble board as a 15x15 2D array of Square objects
     private Square[][] board;
-    private static final char[] COLUMN_LABELS = "ABCDEFGHIJKLMNO".toCharArray();  // Labels for columns A-O
 
-    // Constructor: Initializes the board with blank squares
-    public Board() {
-        board = new Square[15][15];  // 15x15 Scrabble board
+    private static final int ROW = 0;
+    private static final int COLUMN = 1;
+    private static final int DIRECTION = 2;
+
+    private static final int HORIZONTAL = 0;
+    private static final int VERTICAL = 1;
+
+    private static ArrayList<String> words = new ArrayList<>();
+
+    /**
+     * Initializes the Scrabble board with 15x15 squares.
+     */
+    public Board() throws FileNotFoundException{
+        board = new Square[15][15];
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                board[i][j] = new BlankSquare();  // Each square starts as blank
+                board[i][j] = new BlankSquare();  // Initialize each square as empty
             }
+        }
+
+        if (words.size() == 0) {
+            Scanner s = new Scanner(new File("dictionary.txt"));
+            while (s.hasNextLine()) {
+                words.add(s.nextLine());
+            }
+            s.close();
         }
     }
 
     /**
-     * Places a word on the board based on the given tiles and location.
+     * Places a word on the board with appropriate notation.
      *
-     * @param tiles The tiles that form the word to be placed.
-     * @param location The starting location on the board in Scrabble notation (e.g., 15K or K15).
-     * @return The score for the word, or 0 if the move is invalid.
+     * @param word The word to place
+     * @param row The starting row (1-based, i.e. 1-15)
+     * @param col The starting column (1-based, i.e. 1-15 corresponding to A-O)
+     * @param direction "H" for horizontal, "V" for vertical
+     * @param score The score for the word
+     * @return A formatted string for the move in "WORD xy +score" notation
      */
-    public int playMove(Tile[] tiles, String location) {
-        if (!isValidMove(tiles, location)) {
-            return 0;  // Invalid move, return score 0
-        }
+    public int playMove(Tile[] tiles, String word, String l) {
+        int[] location = stringToLocation(l);
+        int score = 0;
+        int numBlank = 0;
 
-        int score = 0;  // Initialize the score for the move
-        Move move = getPlayNotation(location);  // Parse the location into a Move object
-
-        // Convert column and row to 0-based index for array access
-        int colIndex = move.col - 1;
-        int rowIndex = move.row - 1;
-
-        // Place each tile on the board, either horizontally or vertically
-        for (int i = 0; i < tiles.length; i++) {
-            Tile tile = tiles[i];
-            score += tile.getScore();  // Add the score of the tile to the total score
-
-            if (move.isHorizontal) {
-                board[rowIndex][colIndex + i] = tile;  // Place tile horizontally
-            } else {
-                board[rowIndex + i][colIndex] = tile;  // Place tile vertically
-            }
-        }
-
-        return score;  // Return the total score for the word
-    }
-
-    /**
-     * Validates if a word can be placed on the board at the specified location.
-     *
-     * @param tiles The tiles that form the word to be placed.
-     * @param location The starting location in Scrabble notation (e.g., 15K or K15).
-     * @return true if the move is valid, false otherwise.
-     */
-    public boolean isValidMove(Tile[] tiles, String location) {
-        Move move = getPlayNotation(location);  // Parse the location into a Move object
-
-        if (move == null) {
-            return false;  // Invalid location format
-        }
-
-        // Convert column and row to 0-based index for array access
-        int colIndex = move.col - 1;
-        int rowIndex = move.row - 1;
-
-        if (move.isHorizontal) {
-            // Check if the word fits within the row and the board limits
-            if (move.row >= 1 && move.row <= 15 && move.col + tiles.length - 1 <= 15) {
-                // Ensure each square in the row is blank
-                for (int i = 0; i < tiles.length; i++) {
-                    if (!(board[rowIndex][colIndex + i] instanceof BlankSquare)) {
-                        return false;  // A square is already occupied
+        if (location[DIRECTION] == HORIZONTAL) {
+            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                boolean hasAdjacentTile = false;
+                if (board[location[ROW]][i] instanceof Tile) {
+                    Tile t = (Tile) board[location[ROW]][i];
+                    score += t.getScore();
+                }
+                else {
+                    int j = location[ROW] - 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j--;
+                    }
+                    j = location[ROW] + 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j++;
                     }
                 }
-                return true;  // Valid move
-            }
-            return false;  // Invalid move, word goes beyond the board
-        }
-
-        // Check if the word fits within the column and the board limits
-        if (move.col >= 1 && move.col <= 15 && move.row + tiles.length - 1 <= 15) {
-            // Ensure each square in the column is blank
-            for (int i = 0; i < tiles.length; i++) {
-                if (!(board[rowIndex + i][colIndex] instanceof BlankSquare)) {
-                    return false;  // A square is already occupied
+                if (hasAdjacentTile) {
+                    score += tiles[numBlank].getScore();
+                    numBlank++;
                 }
             }
-            return true;  // Valid move
+        }
+        else {
+            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                boolean hasAdjacentTile = false;
+                if (board[i][location[COLUMN]] instanceof Tile) {
+                    Tile t = (Tile) board[i][location[COLUMN]];
+                    score += t.getScore();
+                }
+                else {
+                    int j = location[COLUMN] - 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j--;
+                    }
+                    j = location[COLUMN] + 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j++;
+                    }
+                }
+                if (hasAdjacentTile) {
+                    score += tiles[numBlank].getScore();
+                    numBlank++;
+                }
+            }
         }
 
-        return false;  // Invalid move
+        
+        for (Tile t: tiles) {
+            score += t.getScore();
+            if (location[DIRECTION] == HORIZONTAL) {
+                int i = location[COLUMN];
+                while (board[location[ROW]][i++] instanceof Tile);
+                board[location[ROW]][--i] = t;
+            }
+            else {
+                int i = location[ROW];
+                while (board[i++][location[COLUMN]] instanceof Tile);
+                board[--i][location[COLUMN]] = t;
+            }
+        }
+
+        return score;
     }
 
     /**
-     * Returns a string representation of the Scrabble board.
+     * Validates the placement of the word on the board.
      *
-     * @return The board formatted as a string, with rows and columns labeled.
+     * @param word The word to place
+     * @param row The starting row (0-based index)
+     * @param col The starting column (0-based index)
+     * @param direction "H" for horizontal, "V" for vertical
+     * @return true if the placement is valid, false otherwise
+     */
+    public boolean isValidMove(Tile[] tiles, String word, String l) {
+        int[] location = stringToLocation(l);
+
+        if (!words.contains(word.toLowerCase())) {
+            return false;
+        }
+
+        if (board[7][7] instanceof Tile) {
+            boolean isConnected = false;
+            if (location[DIRECTION] == HORIZONTAL) {
+                for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                    if (board[location[ROW]][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[ROW] < 14 && board[location[ROW] + 1][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[ROW] > 0 && board[location[ROW] - 1][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i < 14 && board[location[ROW]][i+1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i > 0 && board[location[ROW]][i-1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+            }
+            else {
+                for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                    if (board[i][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i > 0 && board[i-1][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i < 14 && board[i+1][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[COLUMN] > 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[COLUMN] < 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+            }
+            if (!isConnected) {
+                System.out.println("NOT CONNECTED !!!!");
+                return isConnected;
+            }
+        }
+        else {
+            if (location[DIRECTION] == HORIZONTAL) {
+                if (location[COLUMN] > 7 || location[COLUMN] + word.length() < 7) {
+                    return false;
+                } 
+            }
+            if (location[DIRECTION] == VERTICAL) {
+                if (location[ROW] > 7 || location[ROW] + word.length() < 7) {
+                    return false;
+                } 
+            }
+        }
+
+        if (location[DIRECTION] == HORIZONTAL) {
+            if (location[COLUMN] + word.length() >= 15) {
+                return false;
+            }
+            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                if (board[location[ROW]][i] instanceof BlankSquare) {
+                    boolean added = false;
+                    StringBuilder s = new StringBuilder();
+                    int j = location[ROW] - 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+
+                    s.append(word.charAt(i - location[COLUMN]));
+                    j = location[ROW] + 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString().toLowerCase()) && added) {
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            if (location[ROW] + word.length() >= 15) {
+                return false;
+            }
+            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                if (board[i][location[COLUMN]] instanceof BlankSquare) {
+                    StringBuilder s = new StringBuilder();
+                    boolean added = false;
+                    int j = location[COLUMN] - 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+                    s.append(word.charAt(i - location[ROW]));
+                    j = location[COLUMN] + 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString()) && added) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private int[] stringToLocation(String s) {
+        int[] location = new int[3];
+        if (Character.isLetter(s.charAt(0))) {
+            location[DIRECTION] = VERTICAL;
+            location[COLUMN] = s.charAt(0) - 'A';
+            location[ROW] = Integer.parseInt(s.substring(1, s.length())) - 1;
+        }
+        else {
+            location[DIRECTION] = HORIZONTAL;
+            location[ROW] = Integer.parseInt(s.substring(0, s.length() - 1)) - 1;
+            location[COLUMN] = s.charAt(s.length() - 1) - 'A';
+        }
+
+        return location;
+    }
+
+    /**
+     * Returns a string representation of the board.
+     *
+     * @return The board in string form
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("  A B C D E F G H I J K L M N O\n");  // Column headers
+        sb.append("   A B C D E F G H I J K L M N O\n");
         for (int i = 0; i < 15; i++) {
-            sb.append(String.format("%2d", i + 1)).append(" ");  // Row labels
+            sb.append(String.format("%2d", i + 1)).append("|");
             for (int j = 0; j < 15; j++) {
-                Square square = board[i][j];
-                sb.append(square instanceof BlankSquare ? " " : ((Tile) square).getLetter()).append(" ");  // Append square contents
+                sb.append(board[i][j].getLetter()).append("|");
             }
-            sb.append("\n");
+            sb.append("\n  ------------------------------\n");
         }
-        return sb.toString();  // Return the board as a string
-    }
-
-    /**
-     * Parses the Scrabble notation for a move and returns a Move object.
-     *
-     * @param location The move notation in Scrabble format (e.g., 15K or K15).
-     * @return A Move object representing the direction, row, and column, or null if invalid.
-     */
-    private Move getPlayNotation(String location) {
-        Move move = null;
-
-        // Check for horizontal move (e.g., 15K)
-        if (location.matches("([1-9]|1[0-5])[A-O]")) {
-            int row = Integer.parseInt(location.substring(0, location.length() - 1));
-            int col = location.charAt(location.length() - 1) - 'A' + 1;
-            move = new Move(true, row, col);  // Horizontal move
-        }
-
-        // Check for vertical move (e.g., K15)
-        if (location.matches("[A-O]([1-9]|1[0-5])")) {
-            int row = Integer.parseInt(location.substring(1));
-            int col = location.charAt(0) - 'A' + 1;
-            move = new Move(false, row, col);  // Vertical move
-        }
-
-        return move;  // Return the move object, or null if the notation is invalid
+        return sb.toString();
     }
 }

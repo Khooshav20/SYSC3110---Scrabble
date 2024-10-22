@@ -5,4 +5,5 @@
  */
 
 public interface Square {
+    public char getLetter();
 }

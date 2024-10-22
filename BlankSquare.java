@@ -11,4 +11,8 @@ public class BlankSquare implements Square {
      */
     public BlankSquare() {
     }
+
+    public char getLetter() {
+        return ' ';
+    }
 }
