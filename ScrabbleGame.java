@@ -1,7 +1,7 @@
 /**
  * The ScrabbleGame class creates and manages a game of Scrabble.
  * 
- * @author Lucas Warburton
+ * @author Lucas Warburton (101276823)
  * @version 22/10/2024
  */
 

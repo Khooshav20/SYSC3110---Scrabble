@@ -13,7 +13,9 @@ import java.util.Scanner;
  * @author Khooshav Bundhoo (101132063)
  * @author Marc Fernandes (101288346)
  * @author Lucas Warburton (101276823)
+ * @version 22/10/2024
  */
+
 public class Board {
     private Square[][] board;
 
