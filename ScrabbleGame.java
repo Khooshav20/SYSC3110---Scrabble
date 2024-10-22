@@ -1,5 +1,11 @@
-import java.util.*;
+/**
+ * The ScrabbleGame class creates and manages a game of Scrabble.
+ * 
+ * @author Lucas Warburton
+ * @version 22/10/2024
+ */
 
+ import java.util.*;
 import javax.print.attribute.IntegerSyntax;
 
 class ScrabbleGame{
@@ -7,6 +13,9 @@ class ScrabbleGame{
     private Player[] players;
     private Board board;
 
+    /**
+     * Creates an instance of ScrabbleGame, causing the game of scrabble to start.
+     */
     public ScrabbleGame(){
         letterBag = new LetterBag();
         Scanner scanner = new Scanner(System.in);
@@ -145,6 +154,12 @@ class ScrabbleGame{
     }
 
 
+    /**
+     * Checks if a string representing a scrabble move is in the proper notation.
+     * 
+     * @param move The string to be verified
+     * @return whether the string is the proper notation
+     */
     private boolean isRightFormat(String move){
         String[] s = move.split(" ");
 
@@ -184,6 +199,12 @@ class ScrabbleGame{
     }
     
 
+    /**
+     * Checks if a string is made up of only uppercase letters.
+     * 
+     * @param s The string to be checked
+     * @return Whether the string is only uppercase
+     */
     private boolean onlyUppercaseLetters(String s){
         for (int i = 0; i < s.length(); i++){
             if (s.charAt(i) < 'A' || s.charAt(i) > 'Z') return false;
@@ -191,6 +212,13 @@ class ScrabbleGame{
         return true;
     }
     
+    /**
+     * Finds the first index of an integer in an array of integers, returning -1 if it is not present.
+     * 
+     * @param a The array of integers to be searched
+     * @param value the integer being searched for
+     * @reuturn the index of the first appearance of the value
+     */
     private int findIndex(Integer[] a, int value){
         for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
         return -1;
