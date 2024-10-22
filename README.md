@@ -49,11 +49,15 @@ File Descriptions
 How to run?
 
  •Install IntelliJ IDEA
+ 
  •Open IntelliJ IDEA and choose Get from Version control
  
  •In the URL section, paste this link: https://github.com/Khooshav20/SYSC3110---Scrabble.git
  
  •Choose your directory and then click on clone
+
+ •Run the main from ScrabbleGame.java
+
  
-Once done, You are good to go!!
+Once done, You are good to go!! Have a great game!
 
