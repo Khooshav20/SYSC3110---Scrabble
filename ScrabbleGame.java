@@ -217,7 +217,7 @@ class ScrabbleGame{
      * 
      * @param a The array of integers to be searched
      * @param value the integer being searched for
-     * @reuturn the index of the first appearance of the value
+     * @return the index of the first appearance of the value
      */
     private int findIndex(Integer[] a, int value){
         for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
