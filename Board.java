@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
  * Represents a 15x15 Scrabble board with functionality to place words
  * either horizontally or vertically. The board uses a 2D array of Square objects.
@@ -6,73 +11,314 @@
  * - For vertical words, the notation is column first then row (e.g., "K15").
  *
  * @author Khooshav Bundhoo (101132063)
+ * @author Marc Fernandes (101288346)
+ * @author Lucas Warburton (101276823)
+ * @version 22/10/2024
  */
+
 public class Board {
     private Square[][] board;
-    private static final char[] COLUMN_LABELS = "ABCDEFGHIJKLMNO".toCharArray(); // Columns a-o, represented as A-O
+
+    private static final int ROW = 0;
+    private static final int COLUMN = 1;
+    private static final int DIRECTION = 2;
+
+    private static final int HORIZONTAL = 0;
+    private static final int VERTICAL = 1;
+
+    private static ArrayList<String> words = new ArrayList<>();
 
     /**
      * Initializes the Scrabble board with 15x15 squares.
      */
-    public Board() {
+    public Board() throws FileNotFoundException{
         board = new Square[15][15];
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                board[i][j] = new Square();  // Initialize each square as empty
+                board[i][j] = new BlankSquare();  // Initialize each square as empty
             }
+        }
+
+        if (words.size() == 0) {
+            Scanner s = new Scanner(new File("dictionary.txt"));
+            while (s.hasNextLine()) {
+                words.add(s.nextLine());
+            }
+            s.close();
         }
     }
 
     /**
      * Places a word on the board with appropriate notation.
      *
-     * @param word The word to place
-     * @param row The starting row (1-based, i.e. 1-15)
-     * @param col The starting column (1-based, i.e. 1-15 corresponding to A-O)
-     * @param direction "H" for horizontal, "V" for vertical
-     * @param score The score for the word
+     * @param tiles the tiles which will be new on the board
+     * @param word the word to be played
+     * @param l the location formatted in Scrabble notation
      * @return A formatted string for the move in "WORD xy +score" notation
      */
-    public String playWord(String word, int row, char col, String direction, int score) {
-        // Convert column letter to a 0-based index
-        int colIndex = Character.toUpperCase(col) - 'A';
-        int rowIndex = row - 1; // Convert to 0-based row index
+    public int playMove(Tile[] tiles, String word, String l) {
+        int[] location = stringToLocation(l);
+        int score = 0;
+        int numBlank = 0;
 
-        if (!isValidPlacement(word, rowIndex, colIndex, direction)) {
-            return "Invalid move";
+        if (location[DIRECTION] == HORIZONTAL) {
+            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                boolean hasAdjacentTile = false;
+                if (board[location[ROW]][i] instanceof Tile) {
+                    Tile t = (Tile) board[location[ROW]][i];
+                    score += t.getScore();
+                }
+                else {
+                    int j = location[ROW] - 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j--;
+                    }
+                    j = location[ROW] + 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j++;
+                    }
+                }
+                if (hasAdjacentTile) {
+                    score += tiles[numBlank].getScore();
+                    numBlank++;
+                }
+            }
+        }
+        else {
+            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                boolean hasAdjacentTile = false;
+                if (board[i][location[COLUMN]] instanceof Tile) {
+                    Tile t = (Tile) board[i][location[COLUMN]];
+                    score += t.getScore();
+                }
+                else {
+                    int j = location[COLUMN] - 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j--;
+                    }
+                    j = location[COLUMN] + 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore();
+                        hasAdjacentTile = true;
+                        j++;
+                    }
+                }
+                if (hasAdjacentTile) {
+                    score += tiles[numBlank].getScore();
+                    numBlank++;
+                }
+            }
         }
 
-        // Place the word on the board
-        if (direction.equals("H")) {
-            for (int i = 0; i < word.length(); i++) {
-                board[rowIndex][colIndex + i].setLetter(word.charAt(i));
+        
+        for (Tile t: tiles) {
+            score += t.getScore();
+            if (location[DIRECTION] == HORIZONTAL) {
+                int i = location[COLUMN];
+                while (board[location[ROW]][i++] instanceof Tile);
+                board[location[ROW]][--i] = t;
             }
-        } else if (direction.equals("V")) {
-            for (int i = 0; i < word.length(); i++) {
-                board[rowIndex + i][colIndex].setLetter(word.charAt(i));
+            else {
+                int i = location[ROW];
+                while (board[i++][location[COLUMN]] instanceof Tile);
+                board[--i][location[COLUMN]] = t;
             }
         }
 
-        String coordinate = getPlayNotation(row, col, direction);
-        return String.format("%s %s +%d", word.toUpperCase(), coordinate, score);
+        return score;
     }
 
     /**
      * Validates the placement of the word on the board.
      *
-     * @param word The word to place
-     * @param row The starting row (0-based index)
-     * @param col The starting column (0-based index)
-     * @param direction "H" for horizontal, "V" for vertical
+     * @param tiles the tiles which will be new on the board
+     * @param word the word to be played
+     * @param l the location formatted in Scrabble notation
      * @return true if the placement is valid, false otherwise
      */
-    private boolean isValidPlacement(String word, int row, int col, String direction) {
-        if (direction.equals("H")) {
-            return col + word.length() <= 15 && row >= 0 && row < 15;
-        } else if (direction.equals("V")) {
-            return row + word.length() <= 15 && col >= 0 && col < 15;
+    public boolean isValidMove(Tile[] tiles, String word, String l) {
+        int[] location = stringToLocation(l);
+
+        if (!words.contains(word.toLowerCase())) {
+            return false;
         }
-        return false;
+
+        if (location[DIRECTION] == HORIZONTAL){
+            for (int i = 0; i < word.length(); i++){
+                if (Character.isLowerCase(word.charAt(i))){
+                    if (board[location[ROW]][location[COLUMN] + i].getLetter() != word.charAt(i) - 0x20) return false;
+                } else {
+                    if (board[location[ROW]][location[COLUMN] + i] instanceof Tile) return false;
+                }
+            }
+        } else {
+            for (int i = 0; i < word.length(); i++){
+                if (Character.isLowerCase(word.charAt(i))){
+                    if (board[location[ROW] + i][location[COLUMN]].getLetter() != word.charAt(i) - 0x20) return false;
+                } else {
+                    if (board[location[ROW] + i][location[COLUMN]] instanceof Tile) return false;
+                }
+            }
+        }
+
+        if (board[7][7] instanceof Tile) {
+            boolean isConnected = false;
+            if (location[DIRECTION] == HORIZONTAL) {
+                for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                    if (board[location[ROW]][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[ROW] < 14 && board[location[ROW] + 1][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[ROW] > 0 && board[location[ROW] - 1][i] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i < 14 && board[location[ROW]][i+1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i > 0 && board[location[ROW]][i-1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+            }
+            else {
+                for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                    if (board[i][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i > 0 && board[i-1][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (i < 14 && board[i+1][location[COLUMN]] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[COLUMN] > 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                    if (location[COLUMN] < 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+            }
+            if (!isConnected) {
+                return isConnected;
+            }
+        }
+        else {
+            if (location[DIRECTION] == HORIZONTAL) {
+                if (location[COLUMN] > 7 || location[COLUMN] + word.length() < 7) {
+                    return false;
+                } 
+            }
+            if (location[DIRECTION] == VERTICAL) {
+                if (location[ROW] > 7 || location[ROW] + word.length() < 7) {
+                    return false;
+                } 
+            }
+        }
+
+        if (location[DIRECTION] == HORIZONTAL) {
+            if (location[COLUMN] + word.length() >= 15) {
+                return false;
+            }
+            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                if (board[location[ROW]][i] instanceof BlankSquare) {
+                    boolean added = false;
+                    StringBuilder s = new StringBuilder();
+                    int j = location[ROW] - 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+
+                    s.append(word.charAt(i - location[COLUMN]));
+                    j = location[ROW] + 1;
+                    while (board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString().toLowerCase()) && added) {
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            if (location[ROW] + word.length() >= 15) {
+                return false;
+            }
+            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                if (board[i][location[COLUMN]] instanceof BlankSquare) {
+                    StringBuilder s = new StringBuilder();
+                    boolean added = false;
+                    int j = location[COLUMN] - 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+                    s.append(word.charAt(i - location[ROW]));
+                    j = location[COLUMN] + 1;
+                    while (board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString()) && added) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private int[] stringToLocation(String s) {
+        int[] location = new int[3];
+        if (Character.isLetter(s.charAt(0))) {
+            location[DIRECTION] = VERTICAL;
+            location[COLUMN] = s.charAt(0) - 'A';
+            location[ROW] = Integer.parseInt(s.substring(1, s.length())) - 1;
+        }
+        else {
+            location[DIRECTION] = HORIZONTAL;
+            location[ROW] = Integer.parseInt(s.substring(0, s.length() - 1)) - 1;
+            location[COLUMN] = s.charAt(s.length() - 1) - 'A';
+        }
+
+        return location;
     }
 
     /**
@@ -83,34 +329,14 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("  A B C D E F G H I J K L M N O\n");
+        sb.append("   A B C D E F G H I J K L M N O\n");
         for (int i = 0; i < 15; i++) {
-            sb.append(String.format("%2d", i + 1)).append(" ");
+            sb.append(String.format("%2d", i + 1)).append("|");
             for (int j = 0; j < 15; j++) {
-                sb.append(board[i][j].getLetter()).append(" ");
+                sb.append(board[i][j].getLetter()).append("|");
             }
-            sb.append("\n");
+            sb.append("\n  ------------------------------\n");
         }
         return sb.toString();
-    }
-
-    /** Plays are usually notated in the form "WORD xy +score" where WORD indicates the main word played,
-     *  xy is the coordinate of the first letter of the main word,
-     *
-     *
-     * @param row The starting row (1-based)
-     * @param col The starting column (character A-O)
-     * @param direction "H" for horizontal, "V" for vertical
-     * @return The formatted coordinate as per the Scrabble rules
-     */
-    private String getPlayNotation(int row, char col, String direction) {
-        if (direction.equals("H")) {
-            // Row comes first, then column letter (e.g., 15K)
-            return String.format("%d%c", row, Character.toUpperCase(col));
-        } else if (direction.equals("V")) {
-            // Column letter comes first, then row (e.g., K15)
-            return String.format("%c%d", Character.toUpperCase(col), row);
-        }
-        return "";
     }
 }

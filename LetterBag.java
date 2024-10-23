@@ -1,18 +1,19 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 /**
  * The LetterBag class creates a bag of shuffled Tiles to use for the Scrabble game.
  * Allows users to create a bag of Tiles, swaps Tiles and get multiple Tiles at once.
  * 
- * @author Marc Fernandes
+ * @author Marc Fernandes (101288346)
  * @version 20/10/2024
  */
 
 public class LetterBag {
-    private ArrayList<Tile> letters;
+    private List<Tile> letters;
 
     /**
      * Creates a new LetterBag containing every tile to use for the game.
@@ -20,6 +21,7 @@ public class LetterBag {
      * @throws FileNotFoundException if tiles.txt is not found in the same folder
      */
     public LetterBag() throws FileNotFoundException {
+        letters = new ArrayList<>();
         // read from tiles.txt and add every tile
         File file = new File("tiles.txt");
         Scanner reader = new Scanner(file);

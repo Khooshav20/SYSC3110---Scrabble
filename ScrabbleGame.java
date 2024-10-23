@@ -1,3 +1,11 @@
+/**
+ * The ScrabbleGame class creates and manages a game of Scrabble.
+ * 
+ * @author Lucas Warburton (101276823)
+ * @version 22/10/2024
+ */
+
+import java.io.FileNotFoundException;
 import java.util.*;
 
 class ScrabbleGame{
@@ -5,14 +13,21 @@ class ScrabbleGame{
     private Player[] players;
     private Board board;
 
-    public ScrabbleGame(){
+    /**
+     * Creates an instance of ScrabbleGame, causing the game of scrabble to start.
+     */
+    public ScrabbleGame() throws FileNotFoundException {
         letterBag = new LetterBag();
         Scanner scanner = new Scanner(System.in);
 
         int numPlayers = -1;
         while (numPlayers > 4 || numPlayers < 2){
             System.out.println("How many players are playing? (2-4)");
-            if (scanner.hasNextInt()) numPlayers = scanner.nextInt();
+            String line = scanner.nextLine();
+
+            if (line.matches("[2-4]")) {
+                numPlayers = Integer.parseInt(line);
+            }
         } 
         players = new Player[numPlayers];
         for (int i = 0; i < numPlayers; i++){
@@ -26,29 +41,37 @@ class ScrabbleGame{
         int currentPlayer = 0;
 
         while (true){
-            System.out.println("The bag has " + letterBag.getSize() + " tiles remaining.");
+            System.out.println("The bag has " + letterBag.getSize() + " tiles remaining.\n");
             System.out.println("Current scores:");
             for (int i = 0; i < numPlayers; i++){
                 System.out.println("Player " + (i + 1) + "'s score: " + players[i].getScore());
             }
-            System.out.println("Player " + (currentPlayer + 1) + "'s turn:\n");
+            System.out.println("\nPlayer " + (currentPlayer + 1) + "'s turn:\n");
             System.out.println(board);
-            System.out.println("\nPlayer " + (currentPlayer+1) + "'s tiles: " + players[currentPlayer].getTiles());
+            System.out.println("Player " + (currentPlayer+1) + "'s tiles: " + players[currentPlayer].getTiles());
 
-            int choice;
+            int choice = 0;
             if (letterBag.getSize() > 0){
-                System.out.println("Would you like to play a word (1), pass (2), or exchange tiles (3)?");
-                choice = scanner.nextInt();
-                while (choice > 3 || choice < 1){
-                    System.out.println("Invalid input. Would you like to play a word (1), exchange tiles (2), or pass (3)?");
-                    choice = scanner.nextInt();
+                while (choice == 0) {
+                    System.out.println("\nWould you like to play a word (1), pass (2), or exchange tiles (3)?");
+                    String line = scanner.nextLine();
+        
+                    if (line.matches("[1-3]")) {
+                        choice = Integer.parseInt(line);
+                    } else {
+                        System.out.print("Invalid input. ");
+                    }
                 }
             } else {
-                System.out.println("Would you like to play a word (1), or pass (2)?");
-                choice = scanner.nextInt();
-                while (choice > 2 || choice < 1){
-                    System.out.println("Invalid input. Would you like to play a word (1), or pass (2)?");
-                    choice = scanner.nextInt();
+                while (choice == 0) {
+                    System.out.println("Would you like to play a word (1), or pass (2)?");
+                    String line = scanner.nextLine();
+        
+                    if (line.matches("[1-2]")) {
+                        choice = Integer.parseInt(line);
+                    } else {
+                        System.out.print("Invalid input. ");
+                    }
                 }
             }
 
@@ -59,27 +82,41 @@ class ScrabbleGame{
                 System.out.println("Your move: ");
                 String move = scanner.nextLine();
                 while (true){
-                    String[] s = move.split(" "); 
-                    String letters = "";
-                    for (int i = 0; i < s[0].length(); i++){
-                        if (s[0].charAt(i) == '('){
-                            for (; i < s[0].length(); i++){
-                                if (s[0].charAt(i) == ')') break;
-                            }
-                        } else letters = letters + s[0].charAt(i);
-                    }
-                    if (!isRightFormat(move) || !players[currentPlayer].hasLetters(letters)){
+                    while (!isRightFormat(move)) {
                         System.out.println("Invalid format: ");
+                        move = scanner.nextLine();
+                    }
+
+                    String[] s = move.split(" "); 
+                    String word = s[0];
+                    String location = s[1];
+                    String letters = "";
+                    for (int i = 0; i < word.length(); i++){
+                        if (word.charAt(i) == '('){
+                            for (; i < word.length(); i++){
+                                if (word.charAt(i) == ')') break;
+                            }
+                        } else if (Character.isUpperCase(word.charAt(i)))
+                            letters = letters + word.charAt(i);
+                    }
+
+                    if (!players[currentPlayer].hasLetters(letters)){
+                        System.out.println("You don't have those letters: ");
                         move = scanner.nextLine();
                     } else {
                         Tile[] moveTiles = players[currentPlayer].removeLetters(letters);
-                        if (board.isValidPlacement(moveTiles, s[1])){
-                            int score =  board.playWord(moveTiles, s[1]);
+
+                        //not sure how this will work exactly
+                        if (board.isValidMove(moveTiles, word, location)){
+                            int score =  board.playMove(moveTiles, word, location);
                             players[currentPlayer].addScore(score);
                             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(letters.length(), letterBag.getSize())));
+                            System.out.println("Player " + (currentPlayer + 1) + " played " + word.toUpperCase() + " for " + score + " points.");
                             break;
                         } else {
                             players[currentPlayer].addTiles(moveTiles);
+                            System.out.println("Invalid move: ");
+                            move = scanner.nextLine();
                         }
                     }
                 }
@@ -103,11 +140,54 @@ class ScrabbleGame{
                 currentPlayer = -1;
                 break;
             }
+            currentPlayer = (currentPlayer + 1) % numPlayers;
         }
 
-        //end game
+        scanner.close();
+
+        //handle score penalties
+        int totalPenalty = 0;
+        for (int i = 0; i < numPlayers; i++){
+            if (i != currentPlayer){
+                int penalty = players[i].getPenalty();
+                totalPenalty += penalty;
+                players[i].addScore(-penalty);
+            }
+        }
+        if (currentPlayer >= 0) players[currentPlayer].addScore(totalPenalty);
+
+        //obtain scores
+        Integer[] scores = new Integer[numPlayers];
+        for (int i = 0; i < numPlayers; i++){
+            scores[i] = (players[i].getScore());
+        }
+
+        //output leaderboard
+        System.out.println("Final Leaderboard:");
+        int previousPlacement = 1;
+        int previousScore = Collections.min(Arrays.asList(scores));
+        for (int i = 1; i <= numPlayers; i++){
+            int score = Collections.max(Arrays.asList(scores));
+            int index = findIndex(scores, score);
+            if (previousScore == score){
+                System.out.println(previousPlacement + ": Player " + (index + 1) + " with a score of " + players[index].getScore());
+            } else {
+                System.out.println(i + ": Player " + (index + 1) + " with a score of " + players[index].getScore());
+                previousPlacement = i + 1;
+                previousScore = score;
+            }
+            players[index].addScore(-10000);
+            scores[index] -= 10000;
+        }
     }
 
+
+    /**
+     * Checks if a string representing a scrabble move is in the proper notation.
+     * 
+     * @param move The string to be verified
+     * @return whether the string is the proper notation
+     */
     private boolean isRightFormat(String move){
         String[] s = move.split(" ");
 
@@ -123,7 +203,7 @@ class ScrabbleGame{
                         else return false;
                     }
                 }
-            } else if (s[0].charAt(i) <= 'A' || s[0].charAt(i) >= 'Z') return false;
+            } else if ((s[0].charAt(i) < 'A' || s[0].charAt(i) > 'Z') && (s[0].charAt(i) < 'a' || s[0].charAt(i) > 'z')) return false;
         }
 
         //check if the second parameter includes a valid row and column
@@ -145,11 +225,38 @@ class ScrabbleGame{
 
         return true;
     }
+    
 
+    /**
+     * Checks if a string is made up of only uppercase letters.
+     * 
+     * @param s The string to be checked
+     * @return Whether the string is only uppercase
+     */
     private boolean onlyUppercaseLetters(String s){
         for (int i = 0; i < s.length(); i++){
             if (s.charAt(i) < 'A' || s.charAt(i) > 'Z') return false;
         }
         return true;
-    } 
+    }
+    
+    /**
+     * Finds the first index of an integer in an array of integers, returning -1 if it is not present.
+     * 
+     * @param a The array of integers to be searched
+     * @param value the integer being searched for
+     * @return the index of the first appearance of the value
+     */
+    private int findIndex(Integer[] a, int value){
+        for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
+        return -1;
+    }
+
+    public static void main(String args[]) {
+        try {
+            new ScrabbleGame();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,19 +1,9 @@
 /**
  * Empty square class to hold other classes in its hierarchy.
- * @author Marc Fernandes
+ * @author Marc Fernandes (101288346)
+ * @version 22/10/2024
  */
 
-public class Square {
-    /*
-     * Empty square constructor
-     */
-    public Square() {
-
-    }
-
-    public char[] getLetter() {
-    }
-
-    public void setLetter(char c) {
-    }
+public interface Square {
+    public char getLetter();
 }
