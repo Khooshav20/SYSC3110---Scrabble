@@ -239,7 +239,7 @@ public class Board {
         }
 
         if (location[DIRECTION] == HORIZONTAL) {
-            if (location[COLUMN] + word.length() >= 15) {
+            if (location[COLUMN] + word.length() > 15) {
                 return false;
             }
             for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
@@ -271,7 +271,7 @@ public class Board {
             }
         }
         else {
-            if (location[ROW] + word.length() >= 15) {
+            if (location[ROW] + word.length() > 15) {
                 return false;
             }
             for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
