@@ -151,23 +151,104 @@ public class Board {
         int[] location = stringToLocation(l);
 
         if (!words.contains(word.toLowerCase())) {
+            System.out.println("is not a word!!");
             return false;
+        }
+
+        if (location[DIRECTION] == HORIZONTAL) {
+            if (location[COLUMN] + word.length() > 15) {
+                System.out.println("extends off board");
+                return false;
+            }
+            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                if (board[location[ROW]][i] instanceof BlankSquare) {
+                    boolean added = false;
+                    StringBuilder s = new StringBuilder();
+                    int j = location[ROW] - 1;
+                    while (j >= 0 && board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+
+                    s.append(word.charAt(i - location[COLUMN]));
+                    j = location[ROW] + 1;
+                    while (j <= 14 && board[j][i] instanceof Tile) {
+                        Tile boardTile = (Tile) board[j][i];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString().toLowerCase()) && added) {
+                        System.out.println("perpendicular word invalid");
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            if (location[ROW] + word.length() > 15) {
+                System.out.println("extends off board");
+                return false;
+            }
+            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                if (board[i][location[COLUMN]] instanceof BlankSquare) {
+                    StringBuilder s = new StringBuilder();
+                    boolean added = false;
+                    int j = location[COLUMN] - 1;
+                    while (j >= 0 && board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j--;
+                    }
+                    s.reverse();
+                    s.append(word.charAt(i - location[ROW]));
+                    j = location[COLUMN] + 1;
+                    while (j <= 14 && board[i][j] instanceof Tile){
+                        Tile boardTile = (Tile) board[i][j];
+                        s.append(boardTile.getLetter());
+                        added = true;
+                        j++;
+                    }
+
+                    if (!words.contains(s.toString()) && added) {
+                        System.out.println("perpendicular word invalid");
+                        return false;
+                    }
+                }
+            }
         }
 
         if (location[DIRECTION] == HORIZONTAL){
             for (int i = 0; i < word.length(); i++){
                 if (Character.isLowerCase(word.charAt(i))){
-                    if (board[location[ROW]][location[COLUMN] + i].getLetter() != word.charAt(i) - 0x20) return false;
+                    if (board[location[ROW]][location[COLUMN] + i].getLetter() != word.charAt(i) - 0x20){
+                        System.out.println("board doesn't have that letter");
+                        return false;
+                    }
                 } else {
-                    if (board[location[ROW]][location[COLUMN] + i] instanceof Tile) return false;
+                    if (board[location[ROW]][location[COLUMN] + i] instanceof Tile){
+                        System.out.println("there's already a tile there bro");
+                        return false;
+                    }
                 }
             }
         } else {
             for (int i = 0; i < word.length(); i++){
                 if (Character.isLowerCase(word.charAt(i))){
-                    if (board[location[ROW] + i][location[COLUMN]].getLetter() != word.charAt(i) - 0x20) return false;
+                    if (board[location[ROW] + i][location[COLUMN]].getLetter() != word.charAt(i) - 0x20){
+                        System.out.println("board doesn't have that letter");
+                        return false;
+                    }
                 } else {
-                    if (board[location[ROW] + i][location[COLUMN]] instanceof Tile) return false;
+                    if (board[location[ROW] + i][location[COLUMN]] instanceof Tile){
+                        System.out.println("there's already a tile there bro");
+                        return false;
+                    }
                 }
             }
         }
@@ -223,85 +304,26 @@ public class Board {
                 }
             }
             if (!isConnected) {
+                System.out.println("word not connected to other word");
                 return isConnected;
             }
         }
         else {
             if (location[DIRECTION] == HORIZONTAL) {
                 if (location[COLUMN] > 7 || location[COLUMN] + word.length() < 7) {
+                    System.out.println("starting word not on starting square");
                     return false;
                 } 
             }
             if (location[DIRECTION] == VERTICAL) {
                 if (location[ROW] > 7 || location[ROW] + word.length() < 7) {
+                    System.out.println("starting word not on starting square");
                     return false;
                 } 
             }
         }
 
-        if (location[DIRECTION] == HORIZONTAL) {
-            if (location[COLUMN] + word.length() >= 15) {
-                return false;
-            }
-            for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
-                if (board[location[ROW]][i] instanceof BlankSquare) {
-                    boolean added = false;
-                    StringBuilder s = new StringBuilder();
-                    int j = location[ROW] - 1;
-                    while (board[j][i] instanceof Tile) {
-                        Tile boardTile = (Tile) board[j][i];
-                        s.append(boardTile.getLetter());
-                        added = true;
-                        j--;
-                    }
-                    s.reverse();
-
-                    s.append(word.charAt(i - location[COLUMN]));
-                    j = location[ROW] + 1;
-                    while (board[j][i] instanceof Tile) {
-                        Tile boardTile = (Tile) board[j][i];
-                        s.append(boardTile.getLetter());
-                        added = true;
-                        j++;
-                    }
-
-                    if (!words.contains(s.toString().toLowerCase()) && added) {
-                        return false;
-                    }
-                }
-            }
-        }
-        else {
-            if (location[ROW] + word.length() >= 15) {
-                return false;
-            }
-            for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
-                if (board[i][location[COLUMN]] instanceof BlankSquare) {
-                    StringBuilder s = new StringBuilder();
-                    boolean added = false;
-                    int j = location[COLUMN] - 1;
-                    while (board[i][j] instanceof Tile) {
-                        Tile boardTile = (Tile) board[i][j];
-                        s.append(boardTile.getLetter());
-                        added = true;
-                        j--;
-                    }
-                    s.reverse();
-                    s.append(word.charAt(i - location[ROW]));
-                    j = location[COLUMN] + 1;
-                    while (board[i][j] instanceof Tile) {
-                        Tile boardTile = (Tile) board[i][j];
-                        s.append(boardTile.getLetter());
-                        added = true;
-                        j++;
-                    }
-
-                    if (!words.contains(s.toString()) && added) {
-                        return false;
-                    }
-                }
-            }
-        }
+        
 
         return true;
     }
