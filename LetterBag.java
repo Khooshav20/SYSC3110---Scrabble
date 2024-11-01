@@ -1,9 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 /**
  * The LetterBag class creates a bag of shuffled Tiles to use for the Scrabble game.
  * Allows users to create a bag of Tiles, swaps Tiles and get multiple Tiles at once.
@@ -20,18 +16,22 @@ public class LetterBag {
      * 
      * @throws FileNotFoundException if tiles.txt is not found in the same folder
      */
-    public LetterBag() throws FileNotFoundException {
+    public LetterBag() throws IOException {
         letters = new ArrayList<>();
         // read from tiles.txt and add every tile
-        File file = new File("tiles.txt");
-        Scanner reader = new Scanner(file);
-        while (reader.hasNextLine()) {
+        //File file = new File("tiles.txt");
+        //Scanner reader = new Scanner(file);
+        InputStream in = getClass().getResourceAsStream("/tiles.txt");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line = reader.readLine();
+        while (line != null) {
             // read next line, tokenize the line and add a new tile from the tokens
-            String line = reader.nextLine();
+            
             String[] tokens = line.split(",");
             for (int i = 0; i < Integer.parseInt(tokens[1]); i++) {
                 letters.add(new Tile(tokens[0].charAt(0), Integer.parseInt(tokens[2])));
             }
+            line = reader.readLine();
         }
 
         // close reader and shuffle

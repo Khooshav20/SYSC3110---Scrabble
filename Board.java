@@ -1,7 +1,5 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /**
  * Represents a 15x15 Scrabble board with functionality to place words
@@ -31,7 +29,7 @@ public class Board {
     /**
      * Initializes the Scrabble board with 15x15 squares.
      */
-    public Board() throws FileNotFoundException{
+    public Board() throws IOException{
         board = new Square[15][15];
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -40,11 +38,14 @@ public class Board {
         }
 
         if (words.size() == 0) {
-            Scanner s = new Scanner(new File("dictionary.txt"));
-            while (s.hasNextLine()) {
-                words.add(s.nextLine());
+            InputStream in = getClass().getResourceAsStream("/dictionary.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line = reader.readLine();
+            while (line != null) {
+                words.add(line);
+                line = reader.readLine();
             }
-            s.close();
+            reader.close();
         }
     }
 
@@ -179,19 +180,19 @@ public class Board {
                         isConnected = true;
                         break;
                     }
-                    if (location[ROW] < 14 && board[location[ROW] + 1][i] instanceof Tile) {
+                    if (location[ROW] <= 14 && board[location[ROW] + 1][i] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[ROW] > 0 && board[location[ROW] - 1][i] instanceof Tile) {
+                    if (location[ROW] >= 0 && board[location[ROW] - 1][i] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i < 14 && board[location[ROW]][i+1] instanceof Tile) {
+                    if (i <= 14 && board[location[ROW]][i+1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i > 0 && board[location[ROW]][i-1] instanceof Tile) {
+                    if (i >= 0 && board[location[ROW]][i-1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
@@ -203,19 +204,19 @@ public class Board {
                         isConnected = true;
                         break;
                     }
-                    if (i > 0 && board[i-1][location[COLUMN]] instanceof Tile) {
+                    if (i >= 0 && board[i-1][location[COLUMN]] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i < 14 && board[i+1][location[COLUMN]] instanceof Tile) {
+                    if (i <= 14 && board[i+1][location[COLUMN]] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] > 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
+                    if (location[COLUMN] >= 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] < 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
+                    if (location[COLUMN] <= 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
