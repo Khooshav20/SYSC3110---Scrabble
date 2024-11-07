@@ -362,4 +362,8 @@ public class Board {
         }
         return sb.toString();
     }
+
+    public Square[][] getBoard() {
+        return board;
+    }
 }
