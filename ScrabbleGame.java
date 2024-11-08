@@ -5,7 +5,7 @@
  * @version 22/10/2024
  */
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 class ScrabbleGame{
@@ -16,7 +16,7 @@ class ScrabbleGame{
     /**
      * Creates an instance of ScrabbleGame, causing the game of scrabble to start.
      */
-    public ScrabbleGame() throws FileNotFoundException {
+    public ScrabbleGame() throws IOException {
         letterBag = new LetterBag();
         Scanner scanner = new Scanner(System.in);
 
