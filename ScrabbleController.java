@@ -56,7 +56,7 @@ public class ScrabbleController{
         if (board.isValidMove(moveTiles, word, location)){
             int score = board.playMove(moveTiles, word, location);
             players[currentPlayer].addScore(score);
-            players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
+            if (letterBag.getSize() > 0) players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
             if (players[currentPlayer].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
