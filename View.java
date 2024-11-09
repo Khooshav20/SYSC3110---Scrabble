@@ -57,6 +57,7 @@ public class View extends JFrame implements ActionListener{
                                     if (currentButton == rackButtons[k]){
                                         rackButtons[k].setText(temp);
                                         rackButtons[k].setEnabled(!temp.equals(" "));
+                                        currentButton = null;
                                         break;
                                     }
                                 }
@@ -67,13 +68,13 @@ public class View extends JFrame implements ActionListener{
                                         rackButtons[k].setText(buttonSource.getText());
                                         rackButtons[k].setEnabled(true);
                                         buttonSource.setText(" ");
+                                        currentButton = null;
                                         break;
                                     }
                                 }
                             }
                         }
-                        currentButton = null;
-                        updateDisplay();
+                        
                 });
                 //l.setSize(25, 25);
                 boardButtons[i][j].setEnabled(false);
