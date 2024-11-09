@@ -61,17 +61,18 @@ public class ScrabbleController{
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
-            //popup: player x played "y" for z points
+            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
 
         } else {
             players[currentPlayer].addTiles(moveTiles);
-            //popup: invalid move
+            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
         }
     }
 
     public void pass(){
         nextPlayer();
         turnsWithoutScore++;
+        JOptionPane.showMessageDialog(view, "Turn passed.");
         if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
         view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
     }
