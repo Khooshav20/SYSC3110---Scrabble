@@ -65,7 +65,6 @@ public class ScrabbleController{
             return true;
         } else {
             players[currentPlayer].addTiles(moveTiles);
-            JOptionPane.showMessageDialog(view, word + " could not be played.");
             return false;
         }
     }
