@@ -46,6 +46,49 @@ File Descriptions
  •Player.java <br>
 
 
+Milestone 2
+
+This milestone enhances our initial console-based Scrabble game by introducing a graphical user interface (GUI) using Java Swing. The game is now presented in a JFrame, with players able to interact via mouse clicks. This version also includes unit tests to ensure reliable functionality, particularly focusing on word placement and scoring.
+
+Features:
+- GUI-Based Gameplay: The Scrabble board is rendered in a JFrame, providing an intuitive, visually engaging way to play the game.
+- Mouse Interactions: Players can now place tiles on the board using mouse clicks, streamlining gameplay.
+
+File Descriptions
+
+- BlankSquare.java: Represents a blank square on the Scrabble board.
+- Board.java: Manages the Scrabble board and handles tile placement and validation.
+- LetterBag.java: Manages the bag of Scrabble tiles, ensuring randomness when players draw tiles.
+- Player.java: Represents a player in the game, including their score, tiles, and turn logic.
+- ScrabbleGame.java: Main game logic, player turns, and interactions between the board and players.
+- Square.java: Represents a square on the Scrabble board, potentially containing a tile.
+- Tile.java: Represents an individual Scrabble tile, including its letter and point value.
+- TileTest.java: Unit tests for Tile.java, verifying tile properties and behavior.
+- BoardTest.java: Unit tests for Board.java, covering various board management scenarios.
+- LetterBagTest.java: Unit tests for LetterBag.java, verifying randomness and tile drawing functionality.
+- BlankSquareTest.java: Unit tests for BlankSquare.java to ensure blank square functionality is working correctly.
+- dictionary.txt: A list of valid words for the game, used to validate player moves.
+- tiles.txt: Stores information about tile distribution and point values, defining the available tiles in the game.
+- ScrabbleController.java: Controls user interactions, game events, and manages turn-based logic within the GUI, linking the model and view.
+- View.java: Handles the graphical representation of the Scrabble board and user interface, interacting with the controller to update the display based on game events.
+
+
+#Responsibilities:
+- Marc Fernandes <br>
+ •View.java <br>
+
+- Khooshav Bundhoo <br>
+ •ScrabbleController.java <br>
+ •README.md <br>
+ •Documentation <br>
+
+- Lucas Warburton <br>
+ •View.java <br>
+ •ScrabbleController.java with view.java integration <br>
+ 
+- Alexander Gardiner <br>
+ •Test cases <br>
+
 How to run?
 
  •Install IntelliJ IDEA <br>
@@ -54,6 +97,10 @@ How to run?
  •Choose your directory and then click on clone <br>
  •Run the main from ScrabbleGame.java <br>
 
+Testing
+
+Unit tests can be run through your IDE’s testing suite, targeting the accuracy of word placement and scoring functionality.
+
+This README offers a comprehensive overview of the new features and guides users on setup, gameplay, and testing for Milestone 2.
  
 Once done, You are good to go!! Have a great game!
-
