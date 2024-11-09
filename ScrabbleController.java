@@ -64,19 +64,17 @@ public class ScrabbleController{
 
     public void play(String moveLetters, String word, int[] location){
         Tile[] moveTiles = players[currentPlayer].removeLetters(moveLetters);
-        System.out.println(moveLetters + " " + word);
-        System.out.println(location[0] + "  " + location[1] + "  " + location[2]);
         //not sure how this will work exactly
         if (board.isValidMove(moveTiles, word, location)){
             int score = board.playMove(moveTiles, word, location);
             players[currentPlayer].addScore(score);
             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
-            if (players[currentPlayer].getNumTiles() == 0){ //end game
+            if (players[currentPlayer].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
             //popup: player x played "y" for z points
-            }
+
         } else {
             players[currentPlayer].addTiles(moveTiles);
             //popup: invalid move
@@ -86,7 +84,8 @@ public class ScrabbleController{
     public void pass(){
         nextPlayer();
         turnsWithoutScore++;
-        if (turnsWithoutScore >= 6); //end game
+        if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
     }
 
     public boolean swap(String exchangeString){
@@ -97,7 +96,8 @@ public class ScrabbleController{
             players[currentPlayer].addTiles(exchangeTiles);
             nextPlayer();
             turnsWithoutScore++;
-            if (turnsWithoutScore >= 6); //end game
+            if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             return true;
         }
         return false;
