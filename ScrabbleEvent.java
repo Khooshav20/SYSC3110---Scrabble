@@ -2,18 +2,18 @@ import java.util.ArrayList;
 import java.util.EventObject;
 
 public class ScrabbleEvent extends EventObject{
-    private ArrayList<Player> players;
+    private Player[] players;
     private int currentPlayer;
     private int numLetters;
 
-    public ScrabbleEvent(ArrayList<Player> players, int currentPlayer, int numLetters, ScrabbleController model){
+    public ScrabbleEvent(Player[]players, int currentPlayer, int numLetters, ScrabbleController model){
         super(model);
         this.players = players;
         this.currentPlayer = currentPlayer;
         this.numLetters = numLetters;
     }
 
-    public ArrayList<Player> getPlayers(){
+    public Player[] getPlayers(){
         return players;
     }
 

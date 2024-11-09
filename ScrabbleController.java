@@ -40,7 +40,7 @@ public class ScrabbleController{
 
         this.view = view;
         
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize()));
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
     }
 
     /**
@@ -48,7 +48,6 @@ public class ScrabbleController{
      * @return Array of formatted strings representing player scores.
      */
     private String[] getPlayerScores() {
-        Player[] players = gameModel.getPlayers();
         String[] scores = new String[players.length];
         for (int i = 0; i < players.length; i++) {
             scores[i] = "Player " + (i + 1) + ": " + players[i].getScore() + " pts"; // Format each player's score
@@ -71,7 +70,7 @@ public class ScrabbleController{
             players[currentPlayer].addScore(score);
             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
             nextPlayer();
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize()));
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             //popup: player x played "y" for z points
         } else {
             players[currentPlayer].addTiles(moveTiles);
