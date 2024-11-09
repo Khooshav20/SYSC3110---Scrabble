@@ -17,12 +17,12 @@ import java.util.*;
 public class Board {
     private Square[][] board;
 
-    private static final int ROW = 0;
-    private static final int COLUMN = 1;
-    private static final int DIRECTION = 2;
+    public static final int ROW = 0;
+    public static final int COLUMN = 1;
+    public static final int DIRECTION = 2;
 
-    private static final int HORIZONTAL = 0;
-    private static final int VERTICAL = 1;
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
 
     private static ArrayList<String> words = new ArrayList<>();
 
