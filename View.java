@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.*;
 import java.awt.*;
@@ -227,7 +229,6 @@ public class View extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playButton) {
-            boolean playWord = false;
             Point p = getPlacedTile();
             int numTilesPlaced = getNumTilesPlaced();
 
@@ -339,5 +340,49 @@ public class View extends JFrame implements ActionListener{
         }
 
         updateDisplay();
+    }
+
+    public void endGame(ScrabbleEvent se) {
+        Player[] players = se.getPlayers();
+        String finalString = "";
+
+        //obtain scores
+        Integer[] scores = new Integer[players.length];
+        for (int i = 0; i < players.length; i++){
+            scores[i] = (players[i].getScore());
+        }
+        
+        finalString += "Final Leaderboard:\n";
+        int previousPlacement = 1;
+        int previousScore = Collections.min(Arrays.asList(scores));
+        for (int i = 1; i <= players.length; i++){
+            int score = Collections.max(Arrays.asList(scores));
+            int index = findIndex(scores, score);
+            if (previousScore == score){
+                finalString += previousPlacement + ": Player " + (index + 1) + " with a score of " + players[index].getScore() + "\n";
+            } else {
+                finalString += i + ": Player " + (index + 1) + " with a score of " + players[index].getScore() + "\n";
+                previousPlacement = i + 1;
+                previousScore = score;
+            }
+            players[index].addScore(-10000);
+            scores[index] -= 10000;
+        }
+
+        JOptionPane.showMessageDialog(this, finalString);
+        dispose();
+    }
+
+    
+    /**
+     * Finds the first index of an integer in an array of integers, returning -1 if it is not present.
+     * 
+     * @param a The array of integers to be searched
+     * @param value the integer being searched for
+     * @return the index of the first appearance of the value
+     */
+    private int findIndex(Integer[] a, int value){
+        for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
+        return -1;
     }
 }
