@@ -57,8 +57,7 @@ public class Board {
      * @param l the location formatted in Scrabble notation
      * @return A formatted string for the move in "WORD xy +score" notation
      */
-    public int playMove(Tile[] tiles, String word, String l) {
-        int[] location = stringToLocation(l);
+    public int playMove(Tile[] tiles, String word, int[] location) {
         int score = 0;
         int numBlank = 0;
 
@@ -147,8 +146,7 @@ public class Board {
      * @param l the location formatted in Scrabble notation
      * @return true if the placement is valid, false otherwise
      */
-    public boolean isValidMove(Tile[] tiles, String word, String l) {
-        int[] location = stringToLocation(l);
+    public boolean isValidMove(Tile[] tiles, String word, int[] location) {
 
         if (!words.contains(word.toLowerCase())) {
             System.out.println("is not a word!!");
