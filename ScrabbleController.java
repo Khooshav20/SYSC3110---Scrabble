@@ -64,6 +64,8 @@ public class ScrabbleController{
 
     public void play(String moveLetters, String word, int[] location){
         Tile[] moveTiles = players[currentPlayer].removeLetters(moveLetters);
+        System.out.println(moveLetters + " " + word);
+        System.out.println(location[0] + "  " + location[1] + "  " + location[2]);
         //not sure how this will work exactly
         if (board.isValidMove(moveTiles, word, location)){
             int score = board.playMove(moveTiles, word, location);

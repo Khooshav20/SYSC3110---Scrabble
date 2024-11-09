@@ -31,9 +31,7 @@ public class View extends JFrame implements ActionListener{
 
     ScrabbleController sc;
 
-    public View(Square[][] board) {
-        sc = new ScrabbleController(this, getPlayers());
-
+    public View(Square[][] board) throws IOException {
         setTitle("SYSC3110 Scrabble - Group 17");
         setSize(600, 600);
         setResizable(false);
@@ -91,25 +89,10 @@ public class View extends JFrame implements ActionListener{
                 setBlanks(true);
             });
         }
-        
-
-        // LEADERBOARD
-        scoreLabels = new ArrayList<JLabel>();
-        scoreLabels.add(new JLabel("Leaderboard:"));
-        scoreLabels.add(new JLabel("Player 1: 500"));
-        scoreLabels.add(new JLabel("Player 2: 500"));
-        scoreLabels.add(new JLabel("Player 3: 500"));
-        scoreLabels.add(new JLabel("Player 4: 500"));
-        
-        // TILE
-        bagLabel = new JTextArea("Bag has 69 tiles remaining");
-        bagLabel.setLineWrap(true);
-        bagLabel.setWrapStyleWord(true);
-        bagLabel.setEditable(false);
-        bagLabel.setBackground(Color.PINK);
 
 
-        updateDisplay();
+        //updateDisplay();
+        sc = new ScrabbleController(this, getPlayers());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -224,6 +207,7 @@ public class View extends JFrame implements ActionListener{
     private void setRack(ArrayList<Tile> rack) {
         for (int i = 0; i < rack.size(); i++) {
             rackButtons[i].setText(rack.get(i).getLetter() + "");
+            rackButtons[i].setEnabled(true);
         }
     }
 
@@ -243,6 +227,7 @@ public class View extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playButton) {
+            boolean playWord = false;
             Point p = getPlacedTile();
             int numTilesPlaced = getNumTilesPlaced();
 
@@ -256,6 +241,8 @@ public class View extends JFrame implements ActionListener{
                 for (firstLetter = p.x; firstLetter >= 0 && !boardButtons[p.y][firstLetter].getText().equals(" "); firstLetter--);
                 firstLetter++;
 
+                System.out.println("FIRST LETTER: " + firstLetter);
+
                 int[] location = new int[3];
                 location[Board.DIRECTION] = Board.HORIZONTAL;
                 location[Board.COLUMN] = firstLetter;
@@ -267,14 +254,15 @@ public class View extends JFrame implements ActionListener{
                     String text = boardButtons[p.y][i].getText();
                     if (boardButtons[p.y][i].isEnabled()) {
                         sbLetters.append(text);
+                        sbWord.append(text);
                     }
-                    sbWord.append(text);
+                    else {
+                        sbWord.append(text.toLowerCase());
+                    }
                 }
 
-                sc.play(sbLetters, sbWord, location);
-                return;
+                sc.play(sbLetters.toString(), sbWord.toString(), location);
             }
-            if (numTilesSeen != 1) return;
             numTilesSeen = 0;
             
             for (int i = p.y; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) numTilesSeen += boardButtons[i][p.x].isEnabled() ? 1: 0;
@@ -283,7 +271,8 @@ public class View extends JFrame implements ActionListener{
                 int firstLetter;
                 for (firstLetter = p.y; firstLetter >= 0 && !boardButtons[firstLetter][p.x].getText().equals(" "); firstLetter--);
                 firstLetter++;
-
+                
+                System.out.println("FIRST LETTER: " + firstLetter);
                 int[] location = new int[3];
                 location[Board.DIRECTION] = Board.VERTICAL;
                 location[Board.COLUMN] = p.x;
@@ -295,17 +284,60 @@ public class View extends JFrame implements ActionListener{
                     String text = boardButtons[i][p.x].getText();
                     if (boardButtons[i][p.x].isEnabled()) {
                         sbLetters.append(text);
+                        sbWord.append(text);
                     }
-                    sbWord.append(text);
+                    else {
+                        sbWord.append(text.toLowerCase());
+                    }
+                    
                 }
 
-                sc.play(sbLetters, sbWord, location);
+                sc.play(sbLetters.toString(), sbWord.toString(), location);
                 return;
+            }
+        }
+        else if (e.getSource() == passButton) {
+            sc.pass();
+        }
+        else if (e.getSource() == swapButton) {
+            String input = JOptionPane.showInputDialog(this, "Please enter the tiles you want to swap");
+            while (!sc.swap(input)) {
+                JOptionPane.showMessageDialog(this, "Incorrect input, try again");
+                input = JOptionPane.showInputDialog(this, "Please enter the tiles you want to swap");
             }
         }
     }
 
     public void handleScrabbleStatusUpdate(ScrabbleEvent se) {
+        // LEADERBOARD
+        scoreLabels = new ArrayList<JLabel>();
+        scoreLabels.add(new JLabel("Leaderboard:"));
+        Player[] players = se.getPlayers();
+        for (int i = 0; i < players.length; i++) {
+            JLabel temp = new JLabel("Player " + (i + 1) + ": " + players[i].getScore());
+            if (i == se.getCurrentPlayer()) {
+                temp.setOpaque(true);
+                temp.setBackground(new Color(150, 255, 150));
+            }
+            scoreLabels.add(temp);
+        }
+
+        setRack(players[se.getCurrentPlayer()].getTiles());
         
+        // TILE
+        bagLabel = new JTextArea("Bag has " + se.getNumLetters() + " tiles remaining");
+        bagLabel.setLineWrap(true);
+        bagLabel.setWrapStyleWord(true);
+        bagLabel.setEditable(false);
+        bagLabel.setBackground(Color.PINK);
+
+        // DISABLE PLACED TILES
+        for (JButton[] rowButtons: boardButtons) {
+            for (JButton button: rowButtons) {
+                if (!button.getText().equals(" ")) button.setEnabled(false);
+            }
+        }
+
+        updateDisplay();
     }
 }

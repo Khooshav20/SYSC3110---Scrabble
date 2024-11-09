@@ -99,18 +99,22 @@ public class Board {
                 }
                 else {
                     int j = location[COLUMN] - 1;
-                    while (board[i][j] instanceof Tile) {
-                        Tile boardTile = (Tile) board[i][j];
-                        score += boardTile.getScore();
-                        hasAdjacentTile = true;
-                        j--;
+                    if (j >= 0) {
+                        while (board[i][j] instanceof Tile) {
+                            Tile boardTile = (Tile) board[i][j];
+                            score += boardTile.getScore();
+                            hasAdjacentTile = true;
+                            j--;
+                        }
                     }
                     j = location[COLUMN] + 1;
-                    while (board[i][j] instanceof Tile) {
-                        Tile boardTile = (Tile) board[i][j];
-                        score += boardTile.getScore();
-                        hasAdjacentTile = true;
-                        j++;
+                    if (j < 15) {
+                        while (board[i][j] instanceof Tile) {
+                            Tile boardTile = (Tile) board[i][j];
+                            score += boardTile.getScore();
+                            hasAdjacentTile = true;
+                            j++;
+                        }
                     }
                 }
                 if (hasAdjacentTile) {
@@ -291,11 +295,11 @@ public class Board {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] >= 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
+                    if (location[COLUMN] - 1 >= 0 && location[COLUMN] >= 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] <= 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
+                    if (location[COLUMN] + 1 <= 14 && location[COLUMN] <= 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }

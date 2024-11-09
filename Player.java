@@ -107,15 +107,8 @@ public class Player {
      *
      * @return a string representing the letters on the Player's rack
      */
-    public String getTiles() {
-        StringBuilder letters = new StringBuilder();
-        for (int i = 0; i < rack.size(); i++) {
-            letters.append(rack.get(i).getLetter());
-            if (i < rack.size() - 1) {
-                letters.append(", ");
-            }
-        }
-        return letters.toString();
+    public ArrayList<Tile> getTiles() {
+        return rack;
     }
 
     /**
