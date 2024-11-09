@@ -312,13 +312,13 @@ public class Board {
         }
         else {
             if (location[DIRECTION] == HORIZONTAL) {
-                if (location[COLUMN] > 7 || location[COLUMN] + word.length() < 7) {
+                if ((location[COLUMN] > 7 || location[COLUMN] + word.length() < 7) && location[ROW] == 7) {
                     System.out.println("starting word not on starting square");
                     return false;
                 } 
             }
             if (location[DIRECTION] == VERTICAL) {
-                if (location[ROW] > 7 || location[ROW] + word.length() < 7) {
+                if ((location[ROW] > 7 || location[ROW] + word.length() < 7) && location[COLUMN] == 7) {
                     System.out.println("starting word not on starting square");
                     return false;
                 } 
