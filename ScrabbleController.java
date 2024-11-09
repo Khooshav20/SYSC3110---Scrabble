@@ -61,11 +61,11 @@ public class ScrabbleController{
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
-            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
+            JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
 
         } else {
             players[currentPlayer].addTiles(moveTiles);
-            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
+            JOptionPane.showMessageDialog(view, word + " could not be played.");
         }
     }
 
@@ -87,8 +87,10 @@ public class ScrabbleController{
             turnsWithoutScore++;
             if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+            JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
             return true;
         }
+        JOptionPane.showMessageDialog(view, "Those tiles could not be swapped");
         return false;
     }
 }
