@@ -69,12 +69,35 @@ public class ScrabbleController{
             int score = board.playMove(moveTiles, word, location);
             players[currentPlayer].addScore(score);
             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
+            if (players[currentPlayer].getNumTiles() == 0){ //end game
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+            turnsWithoutScore = 0;
             //popup: player x played "y" for z points
+           
         } else {
             players[currentPlayer].addTiles(moveTiles);
             //popup: invalid move
         }
+    }
+
+    public void pass(){
+        nextPlayer();
+        turnsWithoutScore++;
+        if (turnsWithoutScore >= 6); //end game
+    }
+
+    public boolean swap(String exchangeString){
+        exchangeString = exchangeString.toUpperCase();
+        if ((players[currentPlayer].hasLetters(exchangeString)) && exchangeString.length() <= letterBag.getSize()){
+            Tile[] exchangeTiles = players[currentPlayer].removeLetters(exchangeString);
+            exchangeTiles = letterBag.swapTiles(exchangeTiles);
+            players[currentPlayer].addTiles(exchangeTiles);
+            nextPlayer();
+            turnsWithoutScore++;
+            if (turnsWithoutScore >= 6); //end game
+            return true;
+        }
+        return false;
     }
 }

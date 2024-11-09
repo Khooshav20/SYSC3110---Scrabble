@@ -108,7 +108,7 @@ class ScrabbleGame{
 
                         //not sure how this will work exactly
                         if (board.isValidMove(moveTiles, word, location)){
-                            int score =  board.playMove(moveTiles, word, location);
+                            int score = board.playMove(moveTiles, word, location);
                             players[currentPlayer].addScore(score);
                             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(letters.length(), letterBag.getSize())));
                             System.out.println("Player " + (currentPlayer + 1) + " played " + word.toUpperCase() + " for " + score + " points.");
