@@ -50,7 +50,7 @@ public class ScrabbleController{
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
     }
 
-    public void play(String moveLetters, String word, int[] location){
+    public boolean play(String moveLetters, String word, int[] location){
         Tile[] moveTiles = players[currentPlayer].removeLetters(moveLetters);
         //not sure how this will work exactly
         if (board.isValidMove(moveTiles, word, location)){
@@ -62,9 +62,11 @@ public class ScrabbleController{
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
             if (players[currentPlayer-1 >= 0 ? currentPlayer-1: players.length-1].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+            return true;
         } else {
             players[currentPlayer].addTiles(moveTiles);
             JOptionPane.showMessageDialog(view, word + " could not be played.");
+            return false;
         }
     }
 
