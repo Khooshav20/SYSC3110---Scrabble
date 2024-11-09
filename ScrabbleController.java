@@ -44,18 +44,6 @@ public class ScrabbleController{
     }
 
     /**
-     * Retrieves player scores in a format suitable for updating the leaderboard.
-     * @return Array of formatted strings representing player scores.
-     */
-    private String[] getPlayerScores() {
-        String[] scores = new String[players.length];
-        for (int i = 0; i < players.length; i++) {
-            scores[i] = "Player " + (i + 1) + ": " + players[i].getScore() + " pts"; // Format each player's score
-        }
-        return scores;
-    }
-
-    /**
      * Advances to the next player's turn.
      */
     private void nextPlayer() {
