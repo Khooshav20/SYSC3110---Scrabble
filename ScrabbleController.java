@@ -58,10 +58,10 @@ public class ScrabbleController{
             players[currentPlayer].addScore(score);
             if (letterBag.getSize() > 0) players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
             JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
+            nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
             if (players[currentPlayer].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
-            nextPlayer();
         } else {
             players[currentPlayer].addTiles(moveTiles);
             JOptionPane.showMessageDialog(view, word + " could not be played.");
