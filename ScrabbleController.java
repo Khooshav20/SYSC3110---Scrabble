@@ -9,21 +9,38 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
-public class ScrabbleController implements ActionListener{
-    private ScrabbleGame gameModel; // Model representing the game state
+public class ScrabbleController{
+    private LetterBag letterBag; // Model representing the game state
+    private Player[] players; // Model representing the game state
+    private Board board; // Model representing the game state
     private View view;
-    private int currentPlayer = 0; // Tracks the index of the current player
+    private int currentPlayer; // Tracks the index of the current player
+    private int turnsWithoutScore;
 
     /**
      * Constructor to initialize the controller with a game model and view.
      * @param model The Scrabble game model
-     * @param view The Scrabble game view
+     * @param numPlayers The number of players
      */
-    public ScrabbleController(ScrabbleGame model, View view) {
-        this.gameModel = model;
+    public ScrabbleController (View view, int numPlayers) throws IOException {
+        letterBag = new LetterBag();
+
+        players = new Player[numPlayers];
+        for (int i = 0; i < numPlayers; i++){
+            players[i] = new Player();
+            players[i].addTiles(letterBag.getTiles(7));
+        }
+
+        board = new Board();
+
+        turnsWithoutScore = 0;
+        currentPlayer = 0;
+
         this.view = view;
-        initController();
+        
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize()));
     }
 
     /**
@@ -43,21 +60,22 @@ public class ScrabbleController implements ActionListener{
      * Advances to the next player's turn.
      */
     private void nextPlayer() {
-        currentPlayer = (currentPlayer + 1) % gameModel.getPlayers().length; // Cycle to the next player
+        currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("PLAY")){
-            if ()
-        } else if (e.getActionCommand().equals("SWAP")){
-
-        } else if (e.getActionCommand().equals("PASS")){
-
+    public void play(String moveLetters, String word, int[] location){
+        Tile[] moveTiles = players[currentPlayer].removeLetters(moveLetters);
+        //not sure how this will work exactly
+        if (board.isValidMove(moveTiles, word, location)){
+            int score = board.playMove(moveTiles, word, location);
+            players[currentPlayer].addScore(score);
+            players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
+            nextPlayer();
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize()));
+            //popup: player x played "y" for z points
         } else {
-            System.exit(0);
+            players[currentPlayer].addTiles(moveTiles);
+            //popup: invalid move
         }
-
     }
-
 }
