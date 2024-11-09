@@ -315,7 +315,7 @@ public class View extends JFrame implements ActionListener{
                     
                 }
 
-                sc.play(sbLetters.toString(), sbWord.toString(), location);
+                played = sc.play(sbLetters.toString(), sbWord.toString(), location);
             }
             if (!played){
                 JOptionPane.showMessageDialog(this, "The word could not be played.");
