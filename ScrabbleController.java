@@ -76,7 +76,7 @@ public class ScrabbleController{
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
             //popup: player x played "y" for z points
-           
+            }
         } else {
             players[currentPlayer].addTiles(moveTiles);
             //popup: invalid move
