@@ -316,7 +316,9 @@ public class View extends JFrame implements ActionListener{
                 }
 
                 sc.play(sbLetters.toString(), sbWord.toString(), location);
-                return;
+            }
+            if (!played){
+                JOptionPane.showMessageDialog(this, "The word could not be played.");
             }
         }
         else if (e.getSource() == passButton) {
