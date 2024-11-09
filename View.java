@@ -198,23 +198,44 @@ public class View extends JFrame implements ActionListener{
 
     private int getNumTilesPlaced() {
         int i = 0;
-        for (JButton b: rackButtons) {
-            if (!b.isEnabled()) {
-                ++i;
+        for (JButton[] buttonRow: boardButtons) {
+            for (JButton b: buttonRow) {
+                if (b.isEnabled() && !b.getText().equals(" ")) i++;
             }
         }
         return i;
     }
 
     private void setRack(ArrayList<Tile> rack) {
+        for (JButton b: rackButtons) {
+            b.setEnabled(false);
+            b.setText(" ");
+        }
         for (int i = 0; i < rack.size(); i++) {
             rackButtons[i].setText(rack.get(i).getLetter() + "");
             rackButtons[i].setEnabled(true);
         }
     }
 
-    public static int getPlayers() {
-        return 2; // TODO
+    public int getPlayers() {
+        boolean valid = true;
+        int input = -1;
+        do {
+            if (!valid) {
+                JOptionPane.showMessageDialog(this, "Invalid input, please try again.");
+            }
+            valid = true;
+            try {
+                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of players to play Scrabble (2-4)"));
+                if (input > 4 || input < 2) {
+                    valid = false;
+                }
+            }
+            catch (Exception e) {
+                valid = false;
+            }
+        } while (!valid);
+        return input;
     }
 
     public static void main(String[] args) throws IOException {
