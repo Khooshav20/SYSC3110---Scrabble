@@ -61,7 +61,7 @@ public class ScrabbleController{
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
-            if (players[(currentPlayer - 1) % players.length].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+            if (players[currentPlayer-1 >= 0 ? currentPlayer-1: players.length-1].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
         } else {
             players[currentPlayer].addTiles(moveTiles);
             JOptionPane.showMessageDialog(view, word + " could not be played.");
