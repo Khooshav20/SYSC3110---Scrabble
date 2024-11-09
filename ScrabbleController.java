@@ -44,18 +44,6 @@ public class ScrabbleController{
     }
 
     /**
-     * Retrieves player scores in a format suitable for updating the leaderboard.
-     * @return Array of formatted strings representing player scores.
-     */
-    private String[] getPlayerScores() {
-        String[] scores = new String[players.length];
-        for (int i = 0; i < players.length; i++) {
-            scores[i] = "Player " + (i + 1) + ": " + players[i].getScore() + " pts"; // Format each player's score
-        }
-        return scores;
-    }
-
-    /**
      * Advances to the next player's turn.
      */
     private void nextPlayer() {
@@ -64,29 +52,29 @@ public class ScrabbleController{
 
     public void play(String moveLetters, String word, int[] location){
         Tile[] moveTiles = players[currentPlayer].removeLetters(moveLetters);
-        System.out.println(moveLetters + " " + word);
-        System.out.println(location[0] + "  " + location[1] + "  " + location[2]);
         //not sure how this will work exactly
         if (board.isValidMove(moveTiles, word, location)){
             int score = board.playMove(moveTiles, word, location);
             players[currentPlayer].addScore(score);
             players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
-            if (players[currentPlayer].getNumTiles() == 0){ //end game
+            if (players[currentPlayer].getNumTiles() == 0) view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
             nextPlayer();
             view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             turnsWithoutScore = 0;
-            //popup: player x played "y" for z points
-            }
+            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
+
         } else {
             players[currentPlayer].addTiles(moveTiles);
-            //popup: invalid move
+            JOptionPane.showMessageDialog(view, "Tiles " + moveLetters + " swapped.");
         }
     }
 
     public void pass(){
         nextPlayer();
         turnsWithoutScore++;
-        if (turnsWithoutScore >= 6); //end game
+        JOptionPane.showMessageDialog(view, "Turn passed.");
+        if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
     }
 
     public boolean swap(String exchangeString){
@@ -97,7 +85,8 @@ public class ScrabbleController{
             players[currentPlayer].addTiles(exchangeTiles);
             nextPlayer();
             turnsWithoutScore++;
-            if (turnsWithoutScore >= 6); //end game
+            if (turnsWithoutScore >= 6)  view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); //end game
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
             return true;
         }
         return false;
