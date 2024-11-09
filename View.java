@@ -258,6 +258,7 @@ public class View extends JFrame implements ActionListener{
             
             for (int i = p.x; i < 15 && !boardButtons[p.y][i].getText().equals(" "); i++) numTilesSeen += boardButtons[p.y][i].isEnabled() ? 1: 0;
 
+            boolean played = false;
             if (numTilesSeen == numTilesPlaced) {
                 int firstLetter;
                 for (firstLetter = p.x; firstLetter >= 0 && !boardButtons[p.y][firstLetter].getText().equals(" "); firstLetter--);
@@ -283,13 +284,13 @@ public class View extends JFrame implements ActionListener{
                     }
                 }
 
-                sc.play(sbLetters.toString(), sbWord.toString(), location);
+                played = sc.play(sbLetters.toString(), sbWord.toString(), location);
             }
             numTilesSeen = 0;
             
             for (int i = p.y; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) numTilesSeen += boardButtons[i][p.x].isEnabled() ? 1: 0;
             System.out.println(numTilesSeen + " " + numTilesPlaced);
-            if (numTilesSeen == numTilesPlaced) {
+            if (numTilesSeen == numTilesPlaced && !played) {
                 int firstLetter;
                 for (firstLetter = p.y; firstLetter >= 0 && !boardButtons[firstLetter][p.x].getText().equals(" "); firstLetter--);
                 firstLetter++;
