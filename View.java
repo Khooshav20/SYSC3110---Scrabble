@@ -48,6 +48,7 @@ public class View extends JFrame implements ActionListener{
                 boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 boardButtons[i][j].setFont(font);
                 boardButtons[i][j].addActionListener(e -> {
+                    System.out.println("balls");
                     JButton buttonSource = (JButton) e.getSource();
                         if (currentButton != null){
                             String temp = buttonSource.getText();
@@ -58,6 +59,7 @@ public class View extends JFrame implements ActionListener{
                                         rackButtons[k].setText(temp);
                                         rackButtons[k].setEnabled(!temp.equals(" "));
                                         currentButton = null;
+                                        updateDisplay();
                                         break;
                                     }
                                 }
@@ -69,6 +71,7 @@ public class View extends JFrame implements ActionListener{
                                         rackButtons[k].setEnabled(true);
                                         buttonSource.setText(" ");
                                         currentButton = null;
+                                        updateDisplay();
                                         break;
                                     }
                                 }
