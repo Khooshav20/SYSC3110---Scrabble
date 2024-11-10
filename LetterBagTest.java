@@ -2,6 +2,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Tests the letterBag class, note the testShuffle() method as
@@ -54,6 +55,7 @@ public class LetterBagTest {
     @Test
     public void testSwapTiles() {
         Tile[] initialTiles = letterBag.getTiles(7);
+        Tile[] tilesToCompare = letterBag.getTiles(7);
         int originalBagSize = letterBag.getSize();
 
         Tile[] swappedTiles = letterBag.swapTiles(initialTiles);
@@ -65,7 +67,7 @@ public class LetterBagTest {
         // Check that the tiles have actually been swapped.
         boolean isDifferent = false;
         for (int i = 0; i < initialTiles.length; i++) {
-            if (initialTiles[i].getLetter() != swappedTiles[i].getLetter()) {
+            if (tilesToCompare[i].getLetter() != swappedTiles[i].getLetter()) {
                 isDifferent = true;
                 break;
             }
