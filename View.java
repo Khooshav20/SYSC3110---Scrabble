@@ -247,10 +247,6 @@ public class View extends JFrame implements ActionListener{
         new View(board.getBoard());
     }
 
-    public JButton getExchangeButton() {
-        return swapButton;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playButton) {

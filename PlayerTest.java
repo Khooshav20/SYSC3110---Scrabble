@@ -1,5 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -50,10 +53,10 @@ public class PlayerTest {
     public void testAddTiles() {
         Tile[] tiles = { createTile('A', 1), createTile('B', 3), createTile('C', 3) };
         player.addTiles(tiles);
-        assertEquals(3, player.getNumTiles());
-        assertTrue(player.getTiles().contains("A"));
-        assertTrue(player.getTiles().contains("B"));
-        assertTrue(player.getTiles().contains("C"));
+        assertEquals("Wrong size", 3, player.getNumTiles());
+        assertEquals("A is missing", player.getTiles().get(0).getLetter(), 'A');
+        assertEquals("B is missing", player.getTiles().get(1).getLetter(), 'B');
+        assertEquals("C is missing", player.getTiles().get(2).getLetter(), 'C');
     }
 
     @Test
@@ -81,10 +84,10 @@ public class PlayerTest {
         Tile[] tiles = { createTile('X', 8), createTile('Y', 4) };
         player.addTiles(tiles);
 
-        String rack = player.getTiles();
-        assertTrue(rack.contains("X"));
-        assertTrue(rack.contains("Y"));
-        assertEquals("X, Y", rack);
+        ArrayList<Tile> rack = player.getTiles();
+        assertEquals("Wrong size", 2, player.getNumTiles());
+        assertEquals("X is missing", rack.get(0).getLetter(), 'X');
+        assertEquals("Y is missing", rack.get(1).getLetter(), 'Y');
     }
 
     @Test
