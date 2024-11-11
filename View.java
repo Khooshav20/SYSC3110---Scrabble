@@ -8,9 +8,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * A View that allows Scrabble to have a Graphics User Interface (GUI).
+ * 
+ * @author Marc Fernandes
+ * @author Lucas Warburton
+ * @version 10/11/2024
+ */
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
-    
     
     private static Font font = new Font("Comic Sans MS", Font.BOLD, 20);
 
@@ -33,7 +39,15 @@ public class View extends JFrame implements ActionListener{
 
     ScrabbleController sc;
 
+    /**
+     * Creates a new view with a window and all necessary 
+     * components to see and interact with the game.
+     * 
+     * @param board the starting board
+     * @throws IOException if tiles.txt or dictionary.txt is not found.
+     */
     public View(Square[][] board) throws IOException {
+        // set frame parameters
         setTitle("SYSC3110 Scrabble - Group 17");
         setSize(600, 600);
         setResizable(false);
@@ -44,50 +58,57 @@ public class View extends JFrame implements ActionListener{
         boardButtons = new JButton[15][15];
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
+                // initialize button and set parameters
                 boardButtons[i][j] = new JButton(" ");
                 boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 boardButtons[i][j].setFont(font);
                 boardButtons[i][j].addActionListener(e -> {
-                    System.out.println("balls");
+                    // on button click
                     JButton buttonSource = (JButton) e.getSource();
-                        if (currentButton != null){
-                            String temp = buttonSource.getText();
-                            buttonSource.setText(currentButton.getText());
-                                setBlanks(false);
-                                for (int k = 0; k < 7; k++){
-                                    if (currentButton == rackButtons[k]){
-                                        rackButtons[k].setText(temp);
-                                        rackButtons[k].setEnabled(!temp.equals(" "));
-                                        currentButton = null;
-                                        updateDisplay();
-                                        break;
-                                    }
-                                }
-                        } else {
-                            if (!buttonSource.getText().equals(" ")){
-                                for (int k = 0; k < 7; k++){
-                                    if (rackButtons[k].getText().equals(" ")){
-                                        rackButtons[k].setText(buttonSource.getText());
-                                        rackButtons[k].setEnabled(true);
-                                        buttonSource.setText(" ");
-                                        currentButton = null;
-                                        updateDisplay();
-                                        break;
-                                    }
+
+                    // if a button is currently selected
+                    if (currentButton != null){
+                        String temp = buttonSource.getText();
+                        buttonSource.setText(currentButton.getText());
+                        setBlanks(false);
+                        // find selected button and swap
+                        for (int k = 0; k < 7; k++){
+                            if (currentButton == rackButtons[k]){
+                                rackButtons[k].setText(temp);
+                                rackButtons[k].setEnabled(!temp.equals(" "));
+                                currentButton = null;
+                                break;
+                            }
+                        }
+                    } else {
+                        // if there is no button selected and the button clicked is not blank
+                        if (!buttonSource.getText().equals(" ")){
+                            // find rack button that is blank and place it back
+                            for (int k = 0; k < 7; k++){
+                                if (rackButtons[k].getText().equals(" ")){
+                                    rackButtons[k].setText(buttonSource.getText());
+                                    rackButtons[k].setEnabled(true);
+                                    buttonSource.setText(" ");
+                                    buttonSource.setEnabled(false);
+                                    currentButton = null;
+                                    break;
                                 }
                             }
                         }
+                    }
                         
                 });
-                //l.setSize(25, 25);
+                // set disabled on start
                 boardButtons[i][j].setEnabled(false);
             }
         }
         
         // HAND
         rackButtons = new JButton[7];
+        
+        // initialize rack buttons
         for (int i = 0; i < 7; i++) {
-            rackButtons[i] = new JButton((char)(i + 'A') + "");
+            rackButtons[i] = new JButton();
             rackButtons[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
             rackButtons[i].setFont(font);
             rackButtons[i].addActionListener(e -> {
@@ -96,14 +117,18 @@ public class View extends JFrame implements ActionListener{
             });
         }
 
-
-        //updateDisplay();
+        // initialize ScrabbleController and show frame
         sc = new ScrabbleController(this, getPlayers());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
+    /**
+     * Updates the rack, leaderboard, board, and
+     * tile count on the display.
+     */
     private void updateDisplay(){
+        // if main panel already exists, remake it
         if (mainPanel != null) remove(mainPanel);
         // MAIN PANEL
         mainPanel = new JPanel();
@@ -114,6 +139,7 @@ public class View extends JFrame implements ActionListener{
         boardPanel.setLayout(new GridLayout(15, 15));
         boardPanel.setSize(450 ,450);
         boardPanel.setLocation(115, 20);
+        // every time display is updated, disable all letters on the board
         for (int i = 0; i < 15; i++){
             for (int j = 0; j < 15; j++){
                 if (boardButtons[i][j].getText().equals(" ")) {
@@ -181,7 +207,12 @@ public class View extends JFrame implements ActionListener{
         add(mainPanel);
     }
 
+    /**
+     * Sets all blanks on board to <code>enabled</code>.
+     * @param enabled whether blank spaces should be enabled
+     */
     private void setBlanks(boolean enabled) {
+        // if there is a blank on the board, set enabled to what is passed
         for (JButton[] rowButtons: boardButtons) {
             for (JButton button: rowButtons) {
                 if (button.getText().equals(" ")) button.setEnabled(enabled);
@@ -189,7 +220,12 @@ public class View extends JFrame implements ActionListener{
         }
     }
 
+    /**
+     * Finds the first position in the board where a user-placed tile is located.
+     * @return the point which the first placed tile is located, or <code>(-1, -1)</code> if no tiles are placed.
+     */
     private Point getPlacedTile() {
+        // check board from top left down to find the first placed tile
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 if (boardButtons[i][j].isEnabled() && !boardButtons[i][j].getText().equals(" ")) {
@@ -197,11 +233,17 @@ public class View extends JFrame implements ActionListener{
                 }
             }
         }
+        // if none found, return bogus coordinate
         return new Point(-1, -1);
     }
 
+    /**
+     * Iterates through the board to find the number of tiles placed.
+     * @return the number of user-placed tiles that are placed
+     */
     private int getNumTilesPlaced() {
         int i = 0;
+        // iterate through the board and find all tiles placed
         for (JButton[] buttonRow: boardButtons) {
             for (JButton b: buttonRow) {
                 if (b.isEnabled() && !b.getText().equals(" ")) i++;
@@ -210,18 +252,30 @@ public class View extends JFrame implements ActionListener{
         return i;
     }
 
+    /**
+     * Sets the rack visually to <code>rack</code>.
+     * @param rack the player rack containing tiles
+     */
     private void setRack(ArrayList<Tile> rack) {
+        // reset the rack first
         for (JButton b: rackButtons) {
             b.setEnabled(false);
             b.setText(" ");
         }
+        // then set to the rack passed
         for (int i = 0; i < rack.size(); i++) {
             rackButtons[i].setText(rack.get(i).getLetter() + "");
             rackButtons[i].setEnabled(true);
         }
     }
 
+    /**
+     * Asks the user to input the amount of players that are playing 
+     * the current game.
+     * @return the number of players from 2 to 4 (inclusive).
+     */
     public int getPlayers() {
+        // flag to check if input is valid
         boolean valid = true;
         int input = -1;
         do {
@@ -231,10 +285,12 @@ public class View extends JFrame implements ActionListener{
             valid = true;
             try {
                 input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of players to play Scrabble (2-4)"));
+                // number is valid but not in between 2 and 4
                 if (input > 4 || input < 2) {
                     valid = false;
                 }
             }
+            // if what was inputted was not a number
             catch (Exception e) {
                 valid = false;
             }
@@ -242,35 +298,36 @@ public class View extends JFrame implements ActionListener{
         return input;
     }
 
-    public static void main(String[] args) throws IOException {
-        Board board = new Board();
-        new View(board.getBoard());
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
+        // if user wants to play a move
         if (e.getSource() == playButton) {
+            // get where the first tile is placed, and how many are placed
             Point p = getPlacedTile();
             int numTilesPlaced = getNumTilesPlaced();
 
+            // if nothing was placed, return
             if (p.x < 0 || p.y < 0 || numTilesPlaced == 0) return;
             int numTilesSeen = 0;
             
+            // goes horizontally and finds how many were placed to the right
             for (int i = p.x; i < 15 && !boardButtons[p.y][i].getText().equals(" "); i++) numTilesSeen += boardButtons[p.y][i].isEnabled() ? 1: 0;
 
             boolean played = false;
+            // if all placed tiles were found
             if (numTilesSeen == numTilesPlaced) {
+                // goes horizontally and finds the first letter of the full word
                 int firstLetter;
                 for (firstLetter = p.x; firstLetter >= 0 && !boardButtons[p.y][firstLetter].getText().equals(" "); firstLetter--);
                 firstLetter++;
 
-                System.out.println("FIRST LETTER: " + firstLetter);
-
+                // create location array
                 int[] location = new int[3];
                 location[Board.DIRECTION] = Board.HORIZONTAL;
                 location[Board.COLUMN] = firstLetter;
                 location[Board.ROW] = p.y;
 
+                // build full word and tiles needed to create the word
                 StringBuilder sbWord = new StringBuilder();
                 StringBuilder sbLetters = new StringBuilder();
                 for (int i = firstLetter; i < 15 && !boardButtons[p.y][i].getText().equals(" "); i++) {
@@ -284,23 +341,29 @@ public class View extends JFrame implements ActionListener{
                     }
                 }
 
+                // set played to if the move was sucessfully played or not
                 played = sc.play(sbLetters.toString(), sbWord.toString(), location);
             }
+            // reset for vertical
             numTilesSeen = 0;
             
+            // goes vertically and finds how many were placed downward
             for (int i = p.y; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) numTilesSeen += boardButtons[i][p.x].isEnabled() ? 1: 0;
-            System.out.println(numTilesSeen + " " + numTilesPlaced);
+
+            // if all tiles were seen and a move hasn't been played yet
             if (numTilesSeen == numTilesPlaced && !played) {
+                // find first letter of full word by going upwards until a blank space is found
                 int firstLetter;
                 for (firstLetter = p.y; firstLetter >= 0 && !boardButtons[firstLetter][p.x].getText().equals(" "); firstLetter--);
                 firstLetter++;
                 
-                System.out.println("FIRST LETTER: " + firstLetter);
+                // create location array
                 int[] location = new int[3];
                 location[Board.DIRECTION] = Board.VERTICAL;
                 location[Board.COLUMN] = p.x;
                 location[Board.ROW] = firstLetter;
 
+                // build full word and tiles needed to create the word
                 StringBuilder sbWord = new StringBuilder();
                 StringBuilder sbLetters = new StringBuilder();
                 for (int i = firstLetter; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) {
@@ -315,16 +378,22 @@ public class View extends JFrame implements ActionListener{
                     
                 }
 
+                // set played to if the move was sucessfully played or not
                 played = sc.play(sbLetters.toString(), sbWord.toString(), location);
             }
+            // if a move wasnt played, show an error message
             if (!played){
                 JOptionPane.showMessageDialog(this, "The word could not be played.");
             }
         }
         else if (e.getSource() == passButton) {
+            // remove all placed tiles and then pass
+            removeAllPlacedTiles();
             sc.pass();
         }
         else if (e.getSource() == swapButton) {
+            removeAllPlacedTiles();
+            // ask user for the tiles that should be swapped
             String input = JOptionPane.showInputDialog(this, "Please enter the tiles you want to swap");
             while (!sc.swap(input)) {
                 JOptionPane.showMessageDialog(this, "Incorrect input, try again");
@@ -333,11 +402,43 @@ public class View extends JFrame implements ActionListener{
         }
     }
 
+    /**
+     * Finds all placed tiles on the board and places them back
+     * in the player's rack.
+     */
+    public void removeAllPlacedTiles() {
+        // iterate through every button
+        for (JButton[] rowButtons: boardButtons) {
+            for (JButton button: rowButtons) {
+                // if a button is a user-placed button for that turn
+                if (button.isEnabled() && !button.getText().equals(" ")) {
+                    // find rack button that is blank and place it back
+                    for (int k = 0; k < 7; k++){
+                        if (rackButtons[k].getText().equals(" ")){
+                            // add button back to rack
+                            rackButtons[k].setText(button.getText());
+                            rackButtons[k].setEnabled(true);
+                            button.setText(" ");
+                            button.setEnabled(false);
+                            currentButton = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles a ScrabbleEvent called from ScrabbleController.
+     * @param se the event that occurred
+     */
     public void handleScrabbleStatusUpdate(ScrabbleEvent se) {
-        // LEADERBOARD
+        // PLAYERS
         scoreLabels = new ArrayList<JLabel>();
-        scoreLabels.add(new JLabel("Leaderboard:"));
+        scoreLabels.add(new JLabel("Players:"));
         Player[] players = se.getPlayers();
+        // for every player, add to the player list
         for (int i = 0; i < players.length; i++) {
             JLabel temp = new JLabel("Player " + (i + 1) + ": " + players[i].getScore());
             if (i == se.getCurrentPlayer()) {
@@ -347,6 +448,7 @@ public class View extends JFrame implements ActionListener{
             scoreLabels.add(temp);
         }
 
+        // RACK
         setRack(players[se.getCurrentPlayer()].getTiles());
         
         // TILE
@@ -363,10 +465,17 @@ public class View extends JFrame implements ActionListener{
             }
         }
 
+        // update after status update
         updateDisplay();
     }
 
+    /**
+     * Ends the game by displaying the leaderboard for the game
+     * and then exiting.
+     * @param se the event passed from ScrabbleController
+     */
     public void endGame(ScrabbleEvent se) {
+        // get all players
         Player[] players = se.getPlayers();
         String finalString = "";
 
@@ -379,6 +488,8 @@ public class View extends JFrame implements ActionListener{
         finalString += "Final Leaderboard:\n";
         int previousPlacement = 1;
         int previousScore = Collections.min(Arrays.asList(scores));
+        // for every player, find the player with the highest score, add them to the string
+        // then remove from the list
         for (int i = 1; i <= players.length; i++){
             int score = Collections.max(Arrays.asList(scores));
             int index = findIndex(scores, score);
@@ -393,6 +504,7 @@ public class View extends JFrame implements ActionListener{
             scores[index] -= 10000;
         }
 
+        // show the message then close
         JOptionPane.showMessageDialog(this, finalString);
         dispose();
     }
@@ -407,6 +519,12 @@ public class View extends JFrame implements ActionListener{
      */
     private int findIndex(Integer[] a, int value){
         for (int i = 0; i < a.length; i++) if (a[i] == value) return i;
+        // return -1 if index is not found
         return -1;
+    }
+
+    public static void main(String[] args) throws IOException {
+        Board board = new Board();
+        new View(board.getBoard());
     }
 }
