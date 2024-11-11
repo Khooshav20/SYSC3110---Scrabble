@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * A View that allows Scrabble to have a Graphics User Interface (GUI).
+ * A View that allows Scrabble to have a Graphical User Interface (GUI).
  * 
  * @author Marc Fernandes
  * @author Lucas Warburton
