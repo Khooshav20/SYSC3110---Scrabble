@@ -4,7 +4,7 @@ import java.util.EventObject;
 /**
  * An Event used to instruct the View on what to display.
  *
- * @author Lucas Warburton
+ * @author Lucas Warburton (101276823)
  * @version 10/11/2024
  */
 public class ScrabbleEvent extends EventObject{
