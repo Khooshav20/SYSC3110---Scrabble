@@ -124,6 +124,7 @@ public class ScrabbleController{
      * @return whether the swap was successful
      */
     public boolean swap(String exchangeString){
+        if (exchangeString == null) return false;
         exchangeString = exchangeString.toUpperCase();
 
         if ((players[currentPlayer].hasLetters(exchangeString)) && exchangeString.length() <= letterBag.getSize()){ //if tiles can be exchanged
