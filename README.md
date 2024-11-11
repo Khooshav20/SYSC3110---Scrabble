@@ -48,7 +48,7 @@ File Descriptions
 
 Milestone 2
 
-This milestone enhances our initial console-based Scrabble game by introducing a graphical user interface (GUI) using Java Swing. The game is now presented in a JFrame, with players able to interact via mouse clicks. This version also includes unit tests to ensure reliable functionality, particularly focusing on word placement and scoring.
+This milestone enhances our initial console-based Scrabble game by introducing a graphical user interface (GUI) using Java Swing. The game is now presented in a JFrame, with players able to interact via mouse clicks. To move a tile, click on the tile and then click on its intended destination. This version also includes unit tests to ensure reliable functionality, particularly focusing on word placement and scoring.
 
 Features:
 - GUI-Based Gameplay: The Scrabble board is rendered in a JFrame, providing an intuitive, visually engaging way to play the game.
@@ -84,7 +84,7 @@ File Descriptions
 
 - Lucas Warburton <br>
  •View.java <br>
- •ScrabbleController.java with view.java integration <br>
+ •ScrabbleController.java with View.java integration <br>
  
 - Alexander Gardiner <br>
  •Test cases <br>
