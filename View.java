@@ -526,5 +526,11 @@ public class View extends JFrame implements ActionListener{
     public static void main(String[] args) throws IOException {
         Board board = new Board();
         new View(board.getBoard());
+
+        Player humanPlayer = new Player("Player 1", false);
+        AIPlayer aiPlayer = new AIPlayer("AI Player 1");
+
+        Player[] players = {humanPlayer, aiPlayer};
+        ScrabbleController controller = new ScrabbleController(board, players);
     }
 }
