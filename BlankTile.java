@@ -1,6 +1,10 @@
 public class BlankTile extends Tile {
     
-    public BlankTile(char letter) {
-        super(letter, 0);
+    public BlankTile() {
+        super(' ', 0);
+    }
+
+    public void setLetter(char c){
+        super.letter = c;
     }
 }

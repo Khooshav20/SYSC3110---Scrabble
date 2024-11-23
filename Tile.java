@@ -6,7 +6,7 @@
  */
 
 public class Tile implements Square {
-    private char letter;
+    protected char letter;
     private int score;
 
     /**

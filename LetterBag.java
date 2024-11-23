@@ -29,7 +29,8 @@ public class LetterBag {
             
             String[] tokens = line.split(",");
             for (int i = 0; i < Integer.parseInt(tokens[1]); i++) {
-                letters.add(new Tile(tokens[0].charAt(0), Integer.parseInt(tokens[2])));
+                if (tokens[0].charAt(0) == ' ') letters.add(new BlankTile());
+                else letters.add(new Tile(tokens[0].charAt(0), Integer.parseInt(tokens[2])));
             }
             line = reader.readLine();
         }

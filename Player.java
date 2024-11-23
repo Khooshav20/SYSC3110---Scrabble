@@ -27,21 +27,24 @@ public class Player {
      *         if otherwise
      */
     public boolean hasLetters(String s) {
+        int numMissing = 0;
+        int numBlanks = 0;
         // Create a temporary string to hold the current rack letters
         StringBuilder tempRack = new StringBuilder();
         for (Tile tile : rack) {
             tempRack.append(tile.getLetter());
+            if (tile instanceof BlankTile) numBlanks++;
         }
 
         // Check if each letter in the word exists in the player's rack
         for (char letter : s.toCharArray()) {
             int index = tempRack.indexOf(String.valueOf(letter));
             if (index == -1) {
-                return false; // If any letter in 's' is missing, return false
+                numMissing++; // If any letter in 's' is missing, return false
             }
             tempRack.deleteCharAt(index); // Remove used letter from tempRack
         }
-        return true; // All letters are available
+        return numBlanks >= numMissing; // All letters are available
     }
 
     /**
@@ -58,6 +61,13 @@ public class Player {
                 if (rack.get(i).getLetter() == letter) {
                     removedTiles.add(rack.remove(i)); // Remove and store the tile
                     break;
+                }
+            }
+            for (int i = 0; i < rack.size(); i++) {
+                if (rack.get(i) instanceof BlankTile){
+                    BlankTile temp = (BlankTile)rack.remove(i);
+                    temp.setLetter(letter);
+                    removedTiles.add(temp);
                 }
             }
         }

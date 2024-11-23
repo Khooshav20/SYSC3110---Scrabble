@@ -31,11 +31,56 @@ public class Board {
      */
     public Board() throws IOException{
         board = new Square[15][15];
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                board[i][j] = new BlankSquare();  // Initialize each square as empty
+        
+        for (int i = 3; i < 7; i++){
+            board[7+i][7+i] = new PremiumTile(2, true);
+            board[7-i][7+i] = new PremiumTile(2, true);
+            board[7+i][7-i] = new PremiumTile(2, true);
+            board[7-i][7-i] = new PremiumTile(2, true);
+        }
+
+        for (int i = 0; i < 15; i += 6){
+            for (int j = 0; j < 15; j += 6){
+                board[i][j] = new PremiumTile(3, true);
             }
         }
+        board[6][6] = new PremiumTile(2, false);
+        board[8][8] = new PremiumTile(2, false);
+        board[8][6] = new PremiumTile(2, false);
+        board[6][8] = new PremiumTile(2, false);
+        board[0][3] = new PremiumTile(2, false);
+        board[0][11] = new PremiumTile(2, false);
+        board[3][0] = new PremiumTile(2, false);
+        board[11][0] = new PremiumTile(2, false);
+        board[14][11] = new PremiumTile(2, false);
+        board[14][3] = new PremiumTile(2, false);
+        board[11][14] = new PremiumTile(2, false);
+        board[3][14] = new PremiumTile(2, false);
+        board[7][3] = new PremiumTile(2, false);
+        board[6][2] = new PremiumTile(2, false);
+        board[8][2] = new PremiumTile(2, false);
+        board[7][11] = new PremiumTile(2, false);
+        board[6][12] = new PremiumTile(2, false);
+        board[8][12] = new PremiumTile(2, false);
+        board[3][7] = new PremiumTile(2, false);
+        board[2][6] = new PremiumTile(2, false);
+        board[2][8] = new PremiumTile(2, false);
+        board[11][7] = new PremiumTile(2, false);
+        board[12][6] = new PremiumTile(2, false);
+        board[12][8] = new PremiumTile(2, false);
+        
+        board[7][7] = new MiddleTile();
+        for (int i = 1; i < 14; i += 4){
+            for (int j = 1; j < 14; j += 4){
+                if (board[i][j] == null) board[i][j] = new PremiumTile(3, false);
+            }
+        }
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                if (board[i][j] == null) board[i][j] = new BlankSquare();  // Initialize each square as empty
+            }
+        }
+        
 
         if (words.size() == 0) {
             InputStream in = getClass().getResourceAsStream("/dictionary.txt");

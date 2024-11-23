@@ -62,12 +62,21 @@ public class View extends JFrame implements ActionListener{
                 boardButtons[i][j] = new JButton(" ");
                 boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 boardButtons[i][j].setFont(font);
+                boardButtons[i][j].setBackground(new Color(0xffffff));
                 boardButtons[i][j].addActionListener(e -> {
                     // on button click
                     JButton buttonSource = (JButton) e.getSource();
 
                     // if a button is currently selected
                     if (currentButton != null){
+                        if (currentButton.getText().equals(".")){
+                            String s = "balls";
+                            while (s.length() != 1 || !Character.isLetter(s.charAt(0))){
+                                s = JOptionPane.showInputDialog("Enter the letter to I don't know. balnk").toUpperCase();
+                            }
+                            currentButton.setText(s);
+                            buttonSource.setBackground(new Color(0x89cff0));
+                        }
                         String temp = buttonSource.getText();
                         buttonSource.setText(currentButton.getText());
                         setBlanks(false);
@@ -76,6 +85,7 @@ public class View extends JFrame implements ActionListener{
                             if (currentButton == rackButtons[k]){
                                 rackButtons[k].setText(temp);
                                 rackButtons[k].setEnabled(!temp.equals(" "));
+                                currentButton.setBackground(new Color(0xffffff));
                                 currentButton = null;
                                 break;
                             }
@@ -86,7 +96,13 @@ public class View extends JFrame implements ActionListener{
                             // find rack button that is blank and place it back
                             for (int k = 0; k < 7; k++){
                                 if (rackButtons[k].getText().equals(" ")){
-                                    rackButtons[k].setText(buttonSource.getText());
+                                    if (buttonSource.getBackground().equals(new Color(0x89cff0))){
+                                        buttonSource.setBackground(new Color(0xffffff));
+                                        rackButtons[k].setText(".");
+                                        rackButtons[k].setBackground(new Color(0x89cff0));
+                                    } else {
+                                        rackButtons[k].setText(buttonSource.getText());
+                                    }
                                     rackButtons[k].setEnabled(true);
                                     buttonSource.setText(" ");
                                     buttonSource.setEnabled(false);
@@ -111,6 +127,7 @@ public class View extends JFrame implements ActionListener{
             rackButtons[i] = new JButton();
             rackButtons[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
             rackButtons[i].setFont(font);
+            rackButtons[i].setBackground(new Color(0xffffff));
             rackButtons[i].addActionListener(e -> {
                 currentButton = (JButton) e.getSource();
                 setBlanks(true);
@@ -264,7 +281,10 @@ public class View extends JFrame implements ActionListener{
         }
         // then set to the rack passed
         for (int i = 0; i < rack.size(); i++) {
-            rackButtons[i].setText(rack.get(i).getLetter() + "");
+            if (rack.get(i) instanceof BlankTile) rackButtons[i].setText(".");
+            else rackButtons[i].setText(rack.get(i).getLetter() + "");
+            if (rackButtons[i].getText().equals(".")) rackButtons[i].setBackground(new Color(0x89cff0));
+            else rackButtons[i].setBackground(new Color(0xffffff));
             rackButtons[i].setEnabled(true);
         }
     }
@@ -526,11 +546,5 @@ public class View extends JFrame implements ActionListener{
     public static void main(String[] args) throws IOException {
         Board board = new Board();
         new View(board.getBoard());
-
-        Player humanPlayer = new Player("Player 1", false);
-        AIPlayer aiPlayer = new AIPlayer("AI Player 1");
-
-        Player[] players = {humanPlayer, aiPlayer};
-        ScrabbleController controller = new ScrabbleController(board, players);
     }
 }
