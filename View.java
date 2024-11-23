@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
     
-    private static Font font = new Font("Comic Sans MS", Font.BOLD, 20);
+    private static Font font = new Font("Comic Sans MS", Font.BOLD, 17);
 
     private JPanel boardPanel;
     private JButton[][] boardButtons;
@@ -36,6 +36,8 @@ public class View extends JFrame implements ActionListener{
     private JButton currentButton;
 
     private JTextArea bagLabel;
+
+    private Square[][] referenceBoard; 
 
     ScrabbleController sc;
 
@@ -56,46 +58,67 @@ public class View extends JFrame implements ActionListener{
         // MAIN BOARD
 
         boardButtons = new JButton[15][15];
+        boardButtons[7][7]= new JButton(" * ");
+        boardButtons[7][7].setBackground(new Color(0xff99ff));
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 // initialize button and set parameters
-                boardButtons[i][j] = new JButton(" ");
+                if (board[i][j] instanceof PremiumTile){
+                    if (((PremiumTile)board[i][j]).getIsWord()){
+                        boardButtons[i][j] = new JButton(((PremiumTile)board[i][j]).getMultiplier() + "W");
+                        if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0xff99ff));
+                        else boardButtons[i][j].setBackground(new Color(0xff0000));
+                    }
+                    else{
+                        boardButtons[i][j]= new JButton(((PremiumTile)board[i][j]).getMultiplier() + "L");
+                        if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0x68ccff));
+                        else boardButtons[i][j].setBackground(new Color(0x0033ff));
+                    }
+                }
+                if (boardButtons[i][j] == null){
+                    boardButtons[i][j] = new JButton("");
+                    boardButtons[i][j].setBackground(new Color(0xffffff));
+                }
+
                 boardButtons[i][j].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 boardButtons[i][j].setFont(font);
-                boardButtons[i][j].setBackground(new Color(0xffffff));
                 boardButtons[i][j].addActionListener(e -> {
                     // on button click
                     JButton buttonSource = (JButton) e.getSource();
 
                     // if a button is currently selected
                     if (currentButton != null){
-                        if (currentButton.getText().equals(".")){
-                            String s = "balls";
-                            while (s.length() != 1 || !Character.isLetter(s.charAt(0))){
-                                s = JOptionPane.showInputDialog("Enter the letter to I don't know. balnk").toUpperCase();
-                            }
-                            currentButton.setText(s);
-                            buttonSource.setBackground(new Color(0x89cff0));
-                        }
                         String temp = buttonSource.getText();
-                        buttonSource.setText(currentButton.getText());
+                        if (currentButton.getText().equals(".")){
+                            String s = "";
+                            while (s.length() != 1 || !Character.isLetter(s.charAt(0))){
+                                s = JOptionPane.showInputDialog("Enter the letter you desire.").toUpperCase();
+                            }
+                            buttonSource.setText(s);
+                            buttonSource.setBackground(new Color(0x89cff0));
+                        } else {
+                            buttonSource.setText(currentButton.getText());
+                            buttonSource.setBackground(new Color(0xffffff));
+                        }
                         setBlanks(false);
                         // find selected button and swap
                         for (int k = 0; k < 7; k++){
                             if (currentButton == rackButtons[k]){
-                                rackButtons[k].setText(temp);
-                                rackButtons[k].setEnabled(!temp.equals(" "));
-                                currentButton.setBackground(new Color(0xffffff));
+                                if (temp.length() == 1) rackButtons[k].setText(temp);
+                                else rackButtons[k].setText("");
+                                rackButtons[k].setEnabled(temp.length() == 1);
+                                rackButtons[k].setBackground(new Color(0xffffff));
                                 currentButton = null;
                                 break;
                             }
                         }
                     } else {
                         // if there is no button selected and the button clicked is not blank
-                        if (!buttonSource.getText().equals(" ")){
+                        if (buttonSource.getText().length() == 1){
                             // find rack button that is blank and place it back
                             for (int k = 0; k < 7; k++){
-                                if (rackButtons[k].getText().equals(" ")){
+                                if (rackButtons[k].getText().equals("")){
+                                    System.out.println("hi");
                                     if (buttonSource.getBackground().equals(new Color(0x89cff0))){
                                         buttonSource.setBackground(new Color(0xffffff));
                                         rackButtons[k].setText(".");
@@ -104,7 +127,27 @@ public class View extends JFrame implements ActionListener{
                                         rackButtons[k].setText(buttonSource.getText());
                                     }
                                     rackButtons[k].setEnabled(true);
-                                    buttonSource.setText(" ");
+                                    int row = 0;
+                                    int col = 0;
+                                    for (; row < 15; row++){
+                                        for (col = 0; col < 15 && boardButtons[row][col] != buttonSource; col++);
+                                        if (col < 15) break;
+                                    }
+                                    if (row == 7 && col == 7){
+                                        buttonSource.setText(" * ");
+                                        buttonSource.setBackground(new Color(0xff99ff));
+                                    } else if (board[row][col] instanceof PremiumTile){
+                                        PremiumTile temp = (PremiumTile)board[row][col];
+                                        if (temp.getIsWord()){
+                                            buttonSource.setText(temp.getMultiplier() + "W");
+                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) buttonSource.setBackground(new Color(0xff99ff));
+                                            else buttonSource.setBackground(new Color(0xff0000));
+                                        } else {
+                                            buttonSource.setText(temp.getMultiplier() + "L");
+                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) buttonSource.setBackground(new Color(0x68ccff));
+                                            else buttonSource.setBackground(new Color(0x0033ff));
+                                        }
+                                    } else buttonSource.setText("");
                                     buttonSource.setEnabled(false);
                                     currentButton = null;
                                     break;
@@ -232,7 +275,7 @@ public class View extends JFrame implements ActionListener{
         // if there is a blank on the board, set enabled to what is passed
         for (JButton[] rowButtons: boardButtons) {
             for (JButton button: rowButtons) {
-                if (button.getText().equals(" ")) button.setEnabled(enabled);
+                if (button.getText().length() != 1) button.setEnabled(enabled);
             }
         }
     }
@@ -245,7 +288,7 @@ public class View extends JFrame implements ActionListener{
         // check board from top left down to find the first placed tile
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                if (boardButtons[i][j].isEnabled() && !boardButtons[i][j].getText().equals(" ")) {
+                if (boardButtons[i][j].isEnabled() && boardButtons[i][j].getText().length() == 1) {
                     return new Point(j, i);
                 }
             }
@@ -263,7 +306,7 @@ public class View extends JFrame implements ActionListener{
         // iterate through the board and find all tiles placed
         for (JButton[] buttonRow: boardButtons) {
             for (JButton b: buttonRow) {
-                if (b.isEnabled() && !b.getText().equals(" ")) i++;
+                if (b.isEnabled() && b.getText().length() == 1) i++;
             }
         }
         return i;
@@ -331,14 +374,14 @@ public class View extends JFrame implements ActionListener{
             int numTilesSeen = 0;
             
             // goes horizontally and finds how many were placed to the right
-            for (int i = p.x; i < 15 && !boardButtons[p.y][i].getText().equals(" "); i++) numTilesSeen += boardButtons[p.y][i].isEnabled() ? 1: 0;
+            for (int i = p.x; i < 15 && boardButtons[p.y][i].getText().length() == 1; i++) numTilesSeen += boardButtons[p.y][i].isEnabled() ? 1: 0;
 
             boolean played = false;
             // if all placed tiles were found
             if (numTilesSeen == numTilesPlaced) {
                 // goes horizontally and finds the first letter of the full word
                 int firstLetter;
-                for (firstLetter = p.x; firstLetter >= 0 && !boardButtons[p.y][firstLetter].getText().equals(" "); firstLetter--);
+                for (firstLetter = p.x; firstLetter >= 0 && boardButtons[p.y][firstLetter].getText().length() == 1; firstLetter--);
                 firstLetter++;
 
                 // create location array
@@ -350,7 +393,7 @@ public class View extends JFrame implements ActionListener{
                 // build full word and tiles needed to create the word
                 StringBuilder sbWord = new StringBuilder();
                 StringBuilder sbLetters = new StringBuilder();
-                for (int i = firstLetter; i < 15 && !boardButtons[p.y][i].getText().equals(" "); i++) {
+                for (int i = firstLetter; i < 15 && boardButtons[p.y][i].getText().length() == 1; i++) {
                     String text = boardButtons[p.y][i].getText();
                     if (boardButtons[p.y][i].isEnabled()) {
                         sbLetters.append(text);
@@ -368,13 +411,13 @@ public class View extends JFrame implements ActionListener{
             numTilesSeen = 0;
             
             // goes vertically and finds how many were placed downward
-            for (int i = p.y; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) numTilesSeen += boardButtons[i][p.x].isEnabled() ? 1: 0;
+            for (int i = p.y; i < 15 && boardButtons[i][p.x].getText().length() == 1; i++) numTilesSeen += boardButtons[i][p.x].isEnabled() ? 1: 0;
 
             // if all tiles were seen and a move hasn't been played yet
             if (numTilesSeen == numTilesPlaced && !played) {
                 // find first letter of full word by going upwards until a blank space is found
                 int firstLetter;
-                for (firstLetter = p.y; firstLetter >= 0 && !boardButtons[firstLetter][p.x].getText().equals(" "); firstLetter--);
+                for (firstLetter = p.y; firstLetter >= 0 && boardButtons[firstLetter][p.x].getText().length() == 1; firstLetter--);
                 firstLetter++;
                 
                 // create location array
@@ -386,7 +429,7 @@ public class View extends JFrame implements ActionListener{
                 // build full word and tiles needed to create the word
                 StringBuilder sbWord = new StringBuilder();
                 StringBuilder sbLetters = new StringBuilder();
-                for (int i = firstLetter; i < 15 && !boardButtons[i][p.x].getText().equals(" "); i++) {
+                for (int i = firstLetter; i < 15 && boardButtons[i][p.x].getText().length() == 1; i++) {
                     String text = boardButtons[i][p.x].getText();
                     if (boardButtons[i][p.x].isEnabled()) {
                         sbLetters.append(text);

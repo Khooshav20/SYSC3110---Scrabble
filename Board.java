@@ -39,8 +39,8 @@ public class Board {
             board[7-i][7-i] = new PremiumTile(2, true);
         }
 
-        for (int i = 0; i < 15; i += 6){
-            for (int j = 0; j < 15; j += 6){
+        for (int i = 0; i < 15; i += 7){
+            for (int j = 0; j < 15; j += 7){
                 board[i][j] = new PremiumTile(3, true);
             }
         }
@@ -105,26 +105,45 @@ public class Board {
     public int playMove(Tile[] tiles, String word, int[] location) {
         int score = 0;
         int numBlank = 0;
+        int mainMultiplier = 1;
+        int mainWordScore = 0;
+        int[] letterMultipliers = new int[tiles.length];
+        for (int i = 0; i < tiles.length; i++) letterMultipliers[i] = 1;
+        int numPreplaced = 0;
+        
 
         if (location[DIRECTION] == HORIZONTAL) {
             for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
+                int currWordMultiplier = 1;
                 boolean hasAdjacentTile = false;
                 if (board[location[ROW]][i] instanceof Tile) {
                     Tile t = (Tile) board[location[ROW]][i];
-                    score += t.getScore();
+                    mainWordScore += t.getScore();
+                    numPreplaced++;
                 }
                 else {
+                    if (board[location[ROW]][i] instanceof PremiumTile){
+                        PremiumTile temp = (PremiumTile)board[location[ROW]][i];
+                        if (temp.getIsWord()){
+                            currWordMultiplier = temp.getMultiplier();
+                            mainMultiplier *= currWordMultiplier;
+                        } else {
+                            letterMultipliers[i - location[COLUMN] - numPreplaced] = temp.getMultiplier();
+                        }
+                    } else if (board[location[ROW]][i] instanceof MiddleTile){
+                        mainMultiplier *= 2;
+                    }
                     int j = location[ROW] - 1;
                     while (board[j][i] instanceof Tile) {
                         Tile boardTile = (Tile) board[j][i];
-                        score += boardTile.getScore();
+                        score += boardTile.getScore() * currWordMultiplier;
                         hasAdjacentTile = true;
                         j--;
                     }
                     j = location[ROW] + 1;
                     while (board[j][i] instanceof Tile) {
                         Tile boardTile = (Tile) board[j][i];
-                        score += boardTile.getScore();
+                        score += boardTile.getScore() * currWordMultiplier;
                         hasAdjacentTile = true;
                         j++;
                     }
@@ -135,19 +154,33 @@ public class Board {
                 }
             }
         }
+
         else {
             for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
+                int currWordMultiplier = 1;
                 boolean hasAdjacentTile = false;
                 if (board[i][location[COLUMN]] instanceof Tile) {
                     Tile t = (Tile) board[i][location[COLUMN]];
-                    score += t.getScore();
+                    mainWordScore += t.getScore();
+                    numPreplaced++;
                 }
                 else {
+                    if (board[i][location[COLUMN]] instanceof PremiumTile){
+                        PremiumTile temp = (PremiumTile)board[i][location[COLUMN]];
+                        if (temp.getIsWord()){
+                            currWordMultiplier = temp.getMultiplier();
+                            mainMultiplier *= currWordMultiplier;
+                        } else {
+                            letterMultipliers[i - location[ROW] - numPreplaced] = temp.getMultiplier();
+                        }
+                    } else if (board[i][location[COLUMN]] instanceof MiddleTile){
+                        mainMultiplier *= 2;
+                    }
                     int j = location[COLUMN] - 1;
                     if (j >= 0) {
                         while (board[i][j] instanceof Tile) {
                             Tile boardTile = (Tile) board[i][j];
-                            score += boardTile.getScore();
+                            score += boardTile.getScore() * currWordMultiplier;
                             hasAdjacentTile = true;
                             j--;
                         }
@@ -156,35 +189,35 @@ public class Board {
                     if (j < 15) {
                         while (board[i][j] instanceof Tile) {
                             Tile boardTile = (Tile) board[i][j];
-                            score += boardTile.getScore();
+                            score += boardTile.getScore() * currWordMultiplier;
                             hasAdjacentTile = true;
                             j++;
                         }
                     }
                 }
                 if (hasAdjacentTile) {
-                    score += tiles[numBlank].getScore();
+                    score += tiles[numBlank].getScore() * letterMultipliers[(letterMultipliers.length - 1)];
                     numBlank++;
                 }
             }
         }
 
         
-        for (Tile t: tiles) {
-            score += t.getScore();
+        for (int j = 0; j < tiles.length; j++) {
+            mainWordScore += tiles[j].getScore() * letterMultipliers[j];
             if (location[DIRECTION] == HORIZONTAL) {
                 int i = location[COLUMN];
-                while (board[location[ROW]][i++] instanceof Tile);
-                board[location[ROW]][--i] = t;
+                while (i < 15 && board[location[ROW]][i++] instanceof Tile);
+                board[location[ROW]][--i] = tiles[j];
             }
             else {
                 int i = location[ROW];
-                while (board[i++][location[COLUMN]] instanceof Tile);
-                board[--i][location[COLUMN]] = t;
+                while (i < 15 && board[i++][location[COLUMN]] instanceof Tile);
+                board[--i][location[COLUMN]] = tiles[j];
             }
         }
 
-        return score;
+        return score + mainWordScore * mainMultiplier;
     }
 
     /**
@@ -196,7 +229,7 @@ public class Board {
      * @return true if the placement is valid, false otherwise
      */
     public boolean isValidMove(Tile[] tiles, String word, int[] location) {
-
+        System.out.println(word);
         if (!words.contains(word.toLowerCase())) {
             System.out.println("is not a word!!");
             return false;
@@ -230,6 +263,7 @@ public class Board {
                     }
 
                     if (!words.contains(s.toString().toLowerCase()) && added) {
+                        System.out.println(s.toString());
                         System.out.println("perpendicular word invalid");
                         return false;
                     }
@@ -262,7 +296,8 @@ public class Board {
                         j++;
                     }
 
-                    if (!words.contains(s.toString()) && added) {
+                    if (!words.contains(s.toString().toLowerCase()) && added) {
+                        System.out.println(s.toString());
                         System.out.println("perpendicular word invalid");
                         return false;
                     }
