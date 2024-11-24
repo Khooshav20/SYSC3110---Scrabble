@@ -55,16 +55,6 @@ public class ScrabbleController{
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
         view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
-        if (players[currentPlayer] instanceof AIPlayer) {
-            AIPlayer p = (AIPlayer) players[currentPlayer];
-            Location l = p.generateBestMove(board);
-            if (l.word.length() == 0) {
-                this.pass();
-            }
-            else {
-                this.play(l.tiles, l.word, l.location);
-            }
-        }
     }
 
     /**
@@ -102,7 +92,7 @@ public class ScrabbleController{
             if (players[currentPlayer-1 >= 0 ? currentPlayer-1: players.length-1].getNumTiles() == 0){
                 view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard())); 
             }
-
+            checkAI();
             //move successful
             return true;
         } else {
@@ -120,7 +110,6 @@ public class ScrabbleController{
     public void pass(){
         //proceed to next turn
         nextPlayer();
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
         turnsWithoutScore++;
 
         //output move to player
@@ -130,6 +119,8 @@ public class ScrabbleController{
         if (turnsWithoutScore >= 6){
             view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
         }
+
+        checkAI();
     }
 
     /**
@@ -155,7 +146,6 @@ public class ScrabbleController{
             //proceed to next turn
             nextPlayer();
             turnsWithoutScore++;
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
 
             //output move to player
             JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
@@ -165,6 +155,8 @@ public class ScrabbleController{
                 view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
             }
 
+            checkAI();
+
             //swap successful
             return true;
         }
@@ -173,5 +165,18 @@ public class ScrabbleController{
 
         //swap unsuccessful
         return false;
+    }
+
+    public void checkAI(){
+        if (players[currentPlayer] instanceof AIPlayer) {
+            AIPlayer p = (AIPlayer) players[currentPlayer];
+            Location l = p.generateBestMove(board);
+            if (l.word.length() == 0) {
+                this.pass();
+            }
+            else {
+                this.play(l.tiles, l.word, l.location);
+            }
+        }
     }
 }

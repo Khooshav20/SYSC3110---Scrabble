@@ -31,12 +31,8 @@ public class Player {
         // Create a temporary string to hold the current rack letters
         StringBuilder tempRack = new StringBuilder();
         for (Tile tile : rack) {
-            tempRack.append(tile.getLetter());
             if (tile instanceof BlankTile) numBlanks++;
-        }
-
-        if (numBlanks > 0) {
-            System.out.println("balls");
+            else tempRack.append(tile.getLetter());
         }
 
         // Check if each letter in the word exists in the player's rack

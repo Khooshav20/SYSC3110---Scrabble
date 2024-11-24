@@ -103,6 +103,7 @@ public class Board {
      * @return A formatted string for the move in "WORD xy +score" notation
      */
     public int playMove(Tile[] tiles, String word, int[] location) {
+        System.out.println(word);
         int score = 0;
         int numBlank = 0;
         int mainMultiplier = 1;
@@ -111,6 +112,7 @@ public class Board {
         for (int i = 0; i < tiles.length; i++) letterMultipliers[i] = 1;
         int numPreplaced = 0;
         int firstLowercaseIndex = 0;
+
         while (Character.isLowerCase(word.charAt(firstLowercaseIndex))) firstLowercaseIndex++;
         word = word.substring(firstLowercaseIndex);
 
