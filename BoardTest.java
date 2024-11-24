@@ -111,7 +111,7 @@ public class BoardTest {
         int[] location = testStringToLocation("8H");
         // Due to premium tiles:
         // Letter at [8][8] ('H') gives all future letters x2 score
-        // Letter at [8][12] ('O') gives all future letters (which are none asides from 'O' itself) x2 score
+        // Letter at [8][12] ('O') gives the 'O' x2 score
         int score = board.playMove(tiles, "HELLO", location);
         assertEquals("Score should be calculated correctly", 26, score);  // Adjust based on scoring logic
     }
