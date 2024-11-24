@@ -177,6 +177,7 @@ public class ScrabbleController{
             AIPlayer p = (AIPlayer) players[currentPlayer];
             Location l = p.generateBestMove(board);
             if (l.word.length() == 0) {
+                System.out.println("AI does not have valid move, passing");
                 this.pass();
             }
             else {
