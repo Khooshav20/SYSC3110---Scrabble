@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -11,8 +12,11 @@ import java.util.List;
  * @author Khooshav Bundhoo (101132063)
  */
 public class AIPlayer extends Player {
+    private int counter = 0;
+    private static HashMap<String, ArrayList<String[]>> results;
+
     public AIPlayer() {
-        
+        if (results == null) results = new HashMap<>();
     }
 
     /**
@@ -115,10 +119,16 @@ public class AIPlayer extends Player {
         }
 
         System.out.println(longestMove.tiles);
+        System.out.println(counter);
+        System.out.println(results.size());
+        counter = 0;
         return longestMove;
     }
 
     public boolean isConnectedHorizontal(Square[][] board, int i, int j, int currentLength) {
+        // TODO: for each indirectly connected point, check if there are any words
+        // that are able to fit, if so return true otherwise return false for optimization
+        // maybe include the letters that must be included so they are able to be checked as well
         if (j - 1 >= 0 && !(board[i][j-1] instanceof BlankSquare)) {
             return true;
         }
@@ -166,28 +176,44 @@ public class AIPlayer extends Player {
 
     public ArrayList<String[]> getValidWords(String regex) {
         ArrayList<String[]> words = new ArrayList<>();
-        for (String word: Board.words) {
-            if (word.length() == regex.length() && word.matches(regex)) {
-                String newWord = "";
-                String scrabbleWord = "";
-                for (int i = 0; i < regex.length(); i++) {
-                    if (word.charAt(i) != regex.charAt(i)) {
-                        newWord += Character.toUpperCase(word.charAt(i));
-                        scrabbleWord += Character.toUpperCase(word.charAt(i));
-                    }
-                    else scrabbleWord += word.charAt(i);
-                }
 
-                String[] tempWords = new String[2];
-                tempWords[0] = scrabbleWord;
-                tempWords[1] = newWord;
-                if (hasLetters(newWord.toUpperCase())) {
+        if (results.containsKey(regex)) {
+            words = results.get(regex);
+        }
+
+        if (words.size() == 0) {
+            for (String word: Board.words) {
+                if (word.length() == regex.length() && word.matches(regex)) {
+                    String newWord = "";
+                    String scrabbleWord = "";
+                    for (int i = 0; i < regex.length(); i++) {
+                        if (word.charAt(i) != regex.charAt(i)) {
+                            newWord += Character.toUpperCase(word.charAt(i));
+                            scrabbleWord += Character.toUpperCase(word.charAt(i));
+                        }
+                        else scrabbleWord += word.charAt(i);
+                    }
+    
+                    String[] tempWords = new String[2];
+                    tempWords[0] = scrabbleWord;
+                    tempWords[1] = newWord;
                     words.add(tempWords);
                 }
             }
+            counter++;
+        }
+        results.put(regex, words);
+
+        ArrayList<String[]> finalWords = new ArrayList<>();
+
+        for (String[] word: words) {
+            if (hasLetters(word[1])) {
+                finalWords.add(word);
+            }
         }
 
-        return words;
+        
+        return finalWords;
     }
 }
 
