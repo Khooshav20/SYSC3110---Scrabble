@@ -172,11 +172,14 @@ public class ScrabbleController{
         return false;
     }
 
+    /**
+     * Checks if the current player is an AI Player, and handles its move if so.
+     */
     public void checkAI(){
         if (players[currentPlayer] instanceof AIPlayer) {
             AIPlayer p = (AIPlayer) players[currentPlayer];
-            Location l = p.generateBestMove(board);
-            if (l.word.length() == 0) {
+            Location l = p.generateLongestMove(board);
+            if (l.word.length() == 0) { //if no valid moves
                 System.out.println("AI does not have valid move, passing");
                 this.pass();
             }

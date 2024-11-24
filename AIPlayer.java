@@ -18,13 +18,13 @@ public class AIPlayer extends Player {
     }
 
     /**
-     * Generates the best possible move for the AI player based on the current state
+     * Generates the longest possible move for the AI player based on the current state
      * of the board.
      * 
      * @param board The current game board
      * @return The best Move the AI can make, or null if no valid move is possible
      */
-    public Location generateBestMove(Board boardObject) {
+    public Location generateLongestMove(Board boardObject) {
         Square[][] board = boardObject.getBoard();
         Location longestMove = new Location(0, 0, "", "", false);
         // horizontal
