@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @version 20/10/2024
  */
 public class Player {
-    private ArrayList<Tile> rack; // Holds the player's tiles
+    protected ArrayList<Tile> rack; // Holds the player's tiles
     private int score; // Player's score
 
     /**
@@ -42,7 +42,9 @@ public class Player {
             if (index == -1) {
                 numMissing++; // If any letter in 's' is missing, return false
             }
-            tempRack.deleteCharAt(index); // Remove used letter from tempRack
+            else {
+                tempRack.deleteCharAt(index); // Remove used letter from tempRack
+            }
         }
         return numBlanks >= numMissing; // All letters are available
     }
@@ -55,19 +57,23 @@ public class Player {
      */
     public Tile[] removeLetters(String s) {
         ArrayList<Tile> removedTiles = new ArrayList<>();
+        System.out.println(s);
         // For ech letter in the string, find and remove the corresponding tile
         for (char letter : s.toCharArray()) {
+            boolean letterRemoved = false;
             for (int i = 0; i < rack.size(); i++) {
                 if (rack.get(i).getLetter() == letter) {
                     removedTiles.add(rack.remove(i)); // Remove and store the tile
+                    letterRemoved = true;
                     break;
                 }
             }
-            for (int i = 0; i < rack.size(); i++) {
+            for (int i = 0; !letterRemoved && i < rack.size(); i++) {
                 if (rack.get(i) instanceof BlankTile){
                     BlankTile temp = (BlankTile)rack.remove(i);
                     temp.setLetter(letter);
                     removedTiles.add(temp);
+                    break;
                 }
             }
         }

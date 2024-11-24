@@ -24,7 +24,7 @@ public class Board {
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
 
-    private static ArrayList<String> words = new ArrayList<>();
+    public static ArrayList<String> words = new ArrayList<>();
 
     /**
      * Initializes the Scrabble board with 15x15 squares.
@@ -110,7 +110,13 @@ public class Board {
         int[] letterMultipliers = new int[tiles.length];
         for (int i = 0; i < tiles.length; i++) letterMultipliers[i] = 1;
         int numPreplaced = 0;
-        
+        int firstLowercaseIndex = 0;
+        while (Character.isLowerCase(word.charAt(firstLowercaseIndex))) firstLowercaseIndex++;
+        word = word.substring(firstLowercaseIndex);
+
+        if (tiles.length == 7) {
+            score += 50;
+        }
 
         if (location[DIRECTION] == HORIZONTAL) {
             for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
@@ -134,14 +140,14 @@ public class Board {
                         mainMultiplier *= 2;
                     }
                     int j = location[ROW] - 1;
-                    while (board[j][i] instanceof Tile) {
+                    while (j >= 0 && board[j][i] instanceof Tile) {
                         Tile boardTile = (Tile) board[j][i];
                         score += boardTile.getScore() * currWordMultiplier;
                         hasAdjacentTile = true;
                         j--;
                     }
                     j = location[ROW] + 1;
-                    while (board[j][i] instanceof Tile) {
+                    while (j < 15 && board[j][i] instanceof Tile) {
                         Tile boardTile = (Tile) board[j][i];
                         score += boardTile.getScore() * currWordMultiplier;
                         hasAdjacentTile = true;
@@ -177,22 +183,18 @@ public class Board {
                         mainMultiplier *= 2;
                     }
                     int j = location[COLUMN] - 1;
-                    if (j >= 0) {
-                        while (board[i][j] instanceof Tile) {
-                            Tile boardTile = (Tile) board[i][j];
-                            score += boardTile.getScore() * currWordMultiplier;
-                            hasAdjacentTile = true;
-                            j--;
-                        }
+                    while (j >= 0 && board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore() * currWordMultiplier;
+                        hasAdjacentTile = true;
+                        j--;
                     }
                     j = location[COLUMN] + 1;
-                    if (j < 15) {
-                        while (board[i][j] instanceof Tile) {
-                            Tile boardTile = (Tile) board[i][j];
-                            score += boardTile.getScore() * currWordMultiplier;
-                            hasAdjacentTile = true;
-                            j++;
-                        }
+                    while (j < 15 && board[i][j] instanceof Tile) {
+                        Tile boardTile = (Tile) board[i][j];
+                        score += boardTile.getScore() * currWordMultiplier;
+                        hasAdjacentTile = true;
+                        j++;
                     }
                 }
                 if (hasAdjacentTile) {
@@ -229,15 +231,12 @@ public class Board {
      * @return true if the placement is valid, false otherwise
      */
     public boolean isValidMove(Tile[] tiles, String word, int[] location) {
-        System.out.println(word);
         if (!words.contains(word.toLowerCase())) {
-            System.out.println("is not a word!!");
             return false;
         }
 
         if (location[DIRECTION] == HORIZONTAL) {
             if (location[COLUMN] + word.length() > 15) {
-                System.out.println("extends off board");
                 return false;
             }
             for (int i = location[COLUMN]; i < location[COLUMN] + word.length(); i++) {
@@ -263,16 +262,13 @@ public class Board {
                     }
 
                     if (!words.contains(s.toString().toLowerCase()) && added) {
-                        System.out.println(s.toString());
-                        System.out.println("perpendicular word invalid");
                         return false;
                     }
                 }
             }
         }
         else {
-            if (location[ROW] + word.length() > 15) {
-                System.out.println("extends off board");
+            if (location[ROW] + word.length() > 15) {;
                 return false;
             }
             for (int i = location[ROW]; i < location[ROW] + word.length(); i++) {
@@ -297,8 +293,6 @@ public class Board {
                     }
 
                     if (!words.contains(s.toString().toLowerCase()) && added) {
-                        System.out.println(s.toString());
-                        System.out.println("perpendicular word invalid");
                         return false;
                     }
                 }
@@ -309,12 +303,10 @@ public class Board {
             for (int i = 0; i < word.length(); i++){
                 if (Character.isLowerCase(word.charAt(i))){
                     if (board[location[ROW]][location[COLUMN] + i].getLetter() != word.charAt(i) - 0x20){
-                        System.out.println("board doesn't have that letter");
                         return false;
                     }
                 } else {
                     if (board[location[ROW]][location[COLUMN] + i] instanceof Tile){
-                        System.out.println("there's already a tile there bro");
                         return false;
                     }
                 }
@@ -323,12 +315,10 @@ public class Board {
             for (int i = 0; i < word.length(); i++){
                 if (Character.isLowerCase(word.charAt(i))){
                     if (board[location[ROW] + i][location[COLUMN]].getLetter() != word.charAt(i) - 0x20){
-                        System.out.println("board doesn't have that letter");
                         return false;
                     }
                 } else {
                     if (board[location[ROW] + i][location[COLUMN]] instanceof Tile){
-                        System.out.println("there's already a tile there bro");
                         return false;
                     }
                 }
@@ -343,19 +333,19 @@ public class Board {
                         isConnected = true;
                         break;
                     }
-                    if (location[ROW] <= 14 && board[location[ROW] + 1][i] instanceof Tile) {
+                    if (location[ROW] + 1 <= 14 && board[location[ROW] + 1][i] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[ROW] >= 0 && board[location[ROW] - 1][i] instanceof Tile) {
+                    if (location[ROW] - 1 >= 0 && board[location[ROW] - 1][i] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i <= 14 && board[location[ROW]][i+1] instanceof Tile) {
+                    if (i + 1 <= 14 && board[location[ROW]][i+1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i >= 0 && board[location[ROW]][i-1] instanceof Tile) {
+                    if (i - 1 >= 0 && board[location[ROW]][i-1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
@@ -367,39 +357,36 @@ public class Board {
                         isConnected = true;
                         break;
                     }
-                    if (i >= 0 && board[i-1][location[COLUMN]] instanceof Tile) {
+                    if (i - 1 >= 0 && board[i-1][location[COLUMN]] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (i <= 14 && board[i+1][location[COLUMN]] instanceof Tile) {
+                    if (i + 1 <= 14 && board[i+1][location[COLUMN]] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] - 1 >= 0 && location[COLUMN] >= 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
+                    if (location[COLUMN] - 1 >= 0 && board[i][location[COLUMN] - 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
-                    if (location[COLUMN] + 1 <= 14 && location[COLUMN] <= 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
+                    if (location[COLUMN] + 1 <= 14 && board[i][location[COLUMN] + 1] instanceof Tile) {
                         isConnected = true;
                         break;
                     }
                 }
             }
             if (!isConnected) {
-                System.out.println("word not connected to other word");
                 return isConnected;
             }
         }
         else {
             if (location[DIRECTION] == HORIZONTAL) {
                 if (location[COLUMN] > 7 || location[COLUMN] + word.length() < 7 || location[ROW] != 7) {
-                    System.out.println("starting word not on starting square");
                     return false;
                 } 
             }
             if (location[DIRECTION] == VERTICAL) {
                 if (location[ROW] > 7 || location[ROW] + word.length() < 7 || location[COLUMN] != 7) {
-                    System.out.println("starting word not on starting square");
                     return false;
                 } 
             }

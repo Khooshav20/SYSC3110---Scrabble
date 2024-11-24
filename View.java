@@ -178,7 +178,8 @@ public class View extends JFrame implements ActionListener{
         }
 
         // initialize ScrabbleController and show frame
-        sc = new ScrabbleController(this, getPlayers());
+        int numPlayers = getPlayers();
+        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -347,9 +348,34 @@ public class View extends JFrame implements ActionListener{
             }
             valid = true;
             try {
-                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of players to play Scrabble (2-4)"));
+                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of players to play Scrabble (1-4)"));
+                // number is valid but not in between 1 and 4
+                if (input > 4 || input < 1) {
+                    valid = false;
+                }
+            }
+            // if what was inputted was not a number
+            catch (Exception e) {
+                valid = false;
+            }
+        } while (!valid);
+        return input;
+    }
+
+    public int getAIPlayers(int humanPlayers) {
+        if (humanPlayers == 4) return 0;
+        // flag to check if input is valid
+        boolean valid = true;
+        int input = -1;
+        do {
+            if (!valid) {
+                JOptionPane.showMessageDialog(this, "Invalid input, please try again.");
+            }
+            valid = true;
+            try {
+                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of AI players to play Scrabble (" + (2-humanPlayers) + "-" + (4-humanPlayers) + ")."));
                 // number is valid but not in between 2 and 4
-                if (input > 4 || input < 2) {
+                if (input > 4 - humanPlayers || input < 2 - humanPlayers) {
                     valid = false;
                 }
             }
@@ -503,7 +529,10 @@ public class View extends JFrame implements ActionListener{
         Player[] players = se.getPlayers();
         // for every player, add to the player list
         for (int i = 0; i < players.length; i++) {
-            JLabel temp = new JLabel("Player " + (i + 1) + ": " + players[i].getScore());
+            String label = "";
+            label += (players[i] instanceof AIPlayer) ? "AI ": "";
+            label += "Player " + (i + 1) + ": " + players[i].getScore();
+            JLabel temp = new JLabel(label);
             if (i == se.getCurrentPlayer()) {
                 temp.setOpaque(true);
                 temp.setBackground(new Color(150, 255, 150));
@@ -522,9 +551,13 @@ public class View extends JFrame implements ActionListener{
         bagLabel.setBackground(Color.PINK);
 
         // DISABLE PLACED TILES
-        for (JButton[] rowButtons: boardButtons) {
-            for (JButton button: rowButtons) {
-                if (!button.getText().equals(" ")) button.setEnabled(false);
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                if (se.getBoard()[i][j] instanceof Tile) {
+                    boardButtons[i][j].setBackground(new Color(0xffffff));
+                    boardButtons[i][j].setText(se.getBoard()[i][j].getLetter() + "");
+                    boardButtons[i][j].setEnabled(false);
+                }
             }
         }
 
@@ -569,7 +602,7 @@ public class View extends JFrame implements ActionListener{
 
         // show the message then close
         JOptionPane.showMessageDialog(this, finalString);
-        dispose();
+        System.exit(0);
     }
 
     

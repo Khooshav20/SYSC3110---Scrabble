@@ -26,12 +26,16 @@ public class ScrabbleController{
      * @param numPlayers The number of players
      * @throws IOException If it fails to read dictionary.txt or files.txt
      */
-    public ScrabbleController (View view, int numPlayers) throws IOException {
+    public ScrabbleController (View view, int numPlayers, int numAIPlayers) throws IOException {
         letterBag = new LetterBag();
 
-        players = new Player[numPlayers];
+        players = new Player[numPlayers + numAIPlayers];
         for (int i = 0; i < numPlayers; i++){
             players[i] = new Player();
+            players[i].addTiles(letterBag.getTiles(7));
+        }
+        for (int i = numPlayers; i < numAIPlayers + numPlayers; i++) {
+            players[i] = new AIPlayer();
             players[i].addTiles(letterBag.getTiles(7));
         }
 
@@ -42,7 +46,7 @@ public class ScrabbleController{
 
         this.view = view;
         
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
     }
 
     /**
@@ -50,6 +54,12 @@ public class ScrabbleController{
      */
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        if (players[currentPlayer] instanceof AIPlayer) {
+            AIPlayer p = (AIPlayer) players[currentPlayer];
+            Location l = p.generateBestMove(board);
+            this.play(l.tiles, l.word, l.location);
+        }
     }
 
     /**
@@ -79,13 +89,13 @@ public class ScrabbleController{
 
             //proceed to next turn
             nextPlayer();
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+            
         
             if (score > 0) turnsWithoutScore = 0;
 
             //end game
             if (players[currentPlayer-1 >= 0 ? currentPlayer-1: players.length-1].getNumTiles() == 0){
-                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this)); 
+                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard())); 
             }
 
             //move unsuccessful
@@ -105,7 +115,7 @@ public class ScrabbleController{
     public void pass(){
         //proceed to next turn
         nextPlayer();
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
         turnsWithoutScore++;
 
         //output move to player
@@ -113,7 +123,7 @@ public class ScrabbleController{
         
         //end game
         if (turnsWithoutScore >= 6){
-            view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+            view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
         }
     }
 
@@ -140,14 +150,14 @@ public class ScrabbleController{
             //proceed to next turn
             nextPlayer();
             turnsWithoutScore++;
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
 
             //output move to player
             JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
 
             //end game
             if (turnsWithoutScore >= 6){
-                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this));
+                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
             }
 
             //swap successful

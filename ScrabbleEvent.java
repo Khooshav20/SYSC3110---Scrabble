@@ -11,6 +11,7 @@ public class ScrabbleEvent extends EventObject{
     private Player[] players;
     private int currentPlayer;
     private int numLetters;
+    private Square[][] board;
 
     /**
      * Initializes a ScrabbleEvent with all relevant information about the current game state.
@@ -20,11 +21,12 @@ public class ScrabbleEvent extends EventObject{
      * @param numLetters The number of tiles in the letter bag
      * @param model The object creating this event
      */
-    public ScrabbleEvent(Player[] players, int currentPlayer, int numLetters, ScrabbleController model){
+    public ScrabbleEvent(Player[] players, int currentPlayer, int numLetters, ScrabbleController model, Square[][] board){
         super(model);
         this.players = players;
         this.currentPlayer = currentPlayer;
         this.numLetters = numLetters;
+        this.board = board;
     }
 
     /**
@@ -52,5 +54,9 @@ public class ScrabbleEvent extends EventObject{
      */
     public int getNumLetters(){
         return numLetters;
+    }
+
+    public Square[][] getBoard() {
+        return board;
     }
 }
