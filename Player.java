@@ -57,7 +57,6 @@ public class Player {
      */
     public Tile[] removeLetters(String s) {
         ArrayList<Tile> removedTiles = new ArrayList<>();
-        System.out.println(s);
         // For ech letter in the string, find and remove the corresponding tile
         for (char letter : s.toCharArray()) {
             boolean letterRemoved = false;

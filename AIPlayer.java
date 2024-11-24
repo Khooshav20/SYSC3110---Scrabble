@@ -15,10 +15,10 @@ import java.util.List;
  */
 public class AIPlayer extends Player {
     private int counter = 0;
-    private static HashMap<String, ArrayList<String[]>> results;
+    private HashMap<String, ArrayList<String[]>> results;
 
     public AIPlayer() {
-        if (results == null) results = new HashMap<>();
+        results = new HashMap<>();
     }
 
     /**
@@ -31,6 +31,7 @@ public class AIPlayer extends Player {
     public Location generateLongestMove(Board boardObject) {
         Square[][] board = boardObject.getBoard();
         Location longestMove = new Location(0, 0, "", "", false);
+        results = new HashMap<>();
         // horizontal
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) { 
@@ -110,8 +111,9 @@ public class AIPlayer extends Player {
 
                         for (String[] word: words) {
                             Tile[] tempTiles = removeLetters(word[1]);
-                            if (boardObject.isValidMove(tempTiles, word[0], longestMove.location)) { //check if word is a valid move
-                                longestMove = new Location(i, j, word[1], word[0], false);
+                            Location tempLocation = new Location(i, j, word[1], word[0], false);
+                            if (boardObject.isValidMove(tempTiles, word[0], tempLocation.location)) { //check if word is a valid move
+                                longestMove = tempLocation;
                                 addTiles(tempTiles);
                                 break;
                             }
@@ -144,26 +146,38 @@ public class AIPlayer extends Player {
         // TODO: for each indirectly connected point, check if there are any words
         // that are able to fit, if so return true otherwise return false for optimization
         // maybe include the letters that must be included so they are able to be checked as well
+        boolean connected = false;
         if (j - 1 >= 0 && !(board[i][j-1] instanceof BlankSquare)) {
-            return true;
+            connected = true;
         }
         if (j + currentLength < 15 && !(board[i][j+currentLength] instanceof BlankSquare)) { //if the word is extended by an existing tile
-            return true;
+            connected = true;
         }
         
         for (int k = j; k < 15 && k < j + currentLength; k++) {
+            StringBuilder regex = new StringBuilder();
             if (!(board[i][k] instanceof BlankSquare)) { //if the word passes through an existing tile
-                return true;
+                connected = true;
+                continue;
             }
-            if (i - 1 >= 0 && !(board[i-1][k] instanceof BlankSquare)) { //if the word is below an existing tile
-                return true;
+            for (int l = i - 1; l >= 0 && !(board[l][k] instanceof BlankSquare); l--) { //if the word is below an existing tile
+                regex.append(board[l][k].getLetter());
+                connected = true;
             }
-            if (i + 1 < 15 && !(board[i+1][k] instanceof BlankSquare)) { //if the word is above an existing tile
-                return true;
+            regex.reverse();
+            regex.append(".");
+            for (int l = i + 1; l < 15 && !(board[l][k] instanceof BlankSquare); l++) { //if the word is above an existing tile
+                regex.append(board[l][k].getLetter());
+                connected = true;
+            }
+            if (regex.length() > 1) {
+                
+                if (getValidWords(regex.toString().toLowerCase()).size() == 0) return false;
+                
             }
         }
 
-        return false;
+        return connected;
     }
 
     /**
@@ -176,26 +190,38 @@ public class AIPlayer extends Player {
      * @return whether it is connected
      */
     public boolean isConnectedVertical(Square[][] board, int i, int j, int currentLength) {
+        boolean connected = false;
         if (i - 1 >= 0 && !(board[i-1][j] instanceof BlankSquare)) { //if the word extends an existing tile
-            return true;
+            connected = true;
         }
         if (i + currentLength < 15 && !(board[i+currentLength][j] instanceof BlankSquare)) { //if the word is extended by an existing tile
-            return true;
+            connected = true;
         }
         
         for (int k = i; k < 15 && k < i + currentLength; k++) { //if the word passes through an existing tile
-            if (!(board[k][j] instanceof BlankSquare)) {
-                return true;
+            StringBuilder regex = new StringBuilder();
+            if (!(board[k][j] instanceof BlankSquare)) { //if the word passes through an existing tile
+                connected = true;
+                continue;
             }
-            if (j - 1 >= 0 && !(board[k][j-1] instanceof BlankSquare)) { //if the word is to the right of an existing tile
-                return true;
+            for (int l = j - 1; l >= 0 && !(board[i][l] instanceof BlankSquare); l--) { //if the word is below an existing tile
+                regex.append(board[i][l].getLetter());
+                connected = true;
             }
-            if (j + 1 < 15 && !(board[k][j+1] instanceof BlankSquare)) { //if the word is to the left of an existing tile
-                return true;
+            regex.reverse();
+            regex.append(".");
+            for (int l = i + 1; l < 15 && !(board[i][l] instanceof BlankSquare); l++) { //if the word is above an existing tile
+                regex.append(board[i][l].getLetter());
+                connected = true;
+            }
+            if (regex.length() > 1) {
+                //System.out.println(regex);
+                if (getValidWords(regex.toString().toLowerCase()).size() == 0) return false;
+                //System.out.println("hello");
             }
         }
 
-        return false;
+        return connected;
     }
 
     /**
@@ -208,42 +234,33 @@ public class AIPlayer extends Player {
         ArrayList<String[]> words = new ArrayList<>();
 
         if (results.containsKey(regex)) {
-            words = results.get(regex);
+            return results.get(regex);
         }
 
-        if (words.size() == 0) {
-            for (String word: Board.words) {
-                if (word.length() == regex.length() && word.matches(regex)) {
-                    String newWord = "";
-                    String scrabbleWord = "";
-                    for (int i = 0; i < regex.length(); i++) {
-                        if (word.charAt(i) != regex.charAt(i)) {
-                            newWord += Character.toUpperCase(word.charAt(i));
-                            scrabbleWord += Character.toUpperCase(word.charAt(i));
-                        }
-                        else scrabbleWord += word.charAt(i);
+        for (String word: Board.words) {
+            if (word.length() == regex.length() && word.matches(regex)) {
+                String newWord = "";
+                String scrabbleWord = "";
+                for (int i = 0; i < regex.length(); i++) {
+                    if (word.charAt(i) != regex.charAt(i)) {
+                        newWord += Character.toUpperCase(word.charAt(i));
+                        scrabbleWord += Character.toUpperCase(word.charAt(i));
                     }
-    
-                    String[] tempWords = new String[2];
-                    tempWords[0] = scrabbleWord;
-                    tempWords[1] = newWord;
+                    else scrabbleWord += word.charAt(i);
+                }
+
+                String[] tempWords = new String[2];
+                tempWords[0] = scrabbleWord;
+                tempWords[1] = newWord;
+                if (hasLetters(tempWords[1])) {
                     words.add(tempWords);
                 }
             }
-            counter++;
         }
+        counter++;
         results.put(regex, words);
-
-        ArrayList<String[]> finalWords = new ArrayList<>();
-
-        for (String[] word: words) {
-            if (hasLetters(word[1])) {
-                finalWords.add(word);
-            }
-        }
-
         
-        return finalWords;
+        return words;
     }
 }
 
