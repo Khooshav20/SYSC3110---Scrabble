@@ -58,7 +58,12 @@ public class ScrabbleController{
         if (players[currentPlayer] instanceof AIPlayer) {
             AIPlayer p = (AIPlayer) players[currentPlayer];
             Location l = p.generateBestMove(board);
-            this.play(l.tiles, l.word, l.location);
+            if (l.word.length() == 0) {
+                this.pass();
+            }
+            else {
+                this.play(l.tiles, l.word, l.location);
+            }
         }
     }
 
@@ -86,7 +91,7 @@ public class ScrabbleController{
 
             //output move to player
             JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
-
+            //view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
             //proceed to next turn
             nextPlayer();
             

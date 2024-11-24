@@ -27,7 +27,6 @@ public class Player {
      *         if otherwise
      */
     public boolean hasLetters(String s) {
-        int numMissing = 0;
         int numBlanks = 0;
         // Create a temporary string to hold the current rack letters
         StringBuilder tempRack = new StringBuilder();
@@ -36,17 +35,22 @@ public class Player {
             if (tile instanceof BlankTile) numBlanks++;
         }
 
+        if (numBlanks > 0) {
+            System.out.println("balls");
+        }
+
         // Check if each letter in the word exists in the player's rack
         for (char letter : s.toCharArray()) {
             int index = tempRack.indexOf(String.valueOf(letter));
             if (index == -1) {
-                numMissing++; // If any letter in 's' is missing, return false
+                if (numBlanks > 0) numBlanks--;
+                else return false;
             }
             else {
                 tempRack.deleteCharAt(index); // Remove used letter from tempRack
             }
         }
-        return numBlanks >= numMissing; // All letters are available
+        return true; // All letters are available
     }
 
     /**

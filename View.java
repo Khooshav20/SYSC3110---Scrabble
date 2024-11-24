@@ -550,6 +550,8 @@ public class View extends JFrame implements ActionListener{
         bagLabel.setEditable(false);
         bagLabel.setBackground(Color.PINK);
 
+        System.out.println("balls");
+
         // DISABLE PLACED TILES
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
