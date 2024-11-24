@@ -98,13 +98,13 @@ public class ScrabbleController{
                 view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard())); 
             }
 
-            //move unsuccessful
+            //move successful
             return true;
         } else {
             //put tiles back in player's hand
             players[currentPlayer].addTiles(moveTiles);
 
-            //move successful
+            //move unsuccessful
             return false;
         }
     }
