@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AIPlayer represents an automated player in the Scrabble game.
