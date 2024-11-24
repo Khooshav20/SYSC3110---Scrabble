@@ -54,7 +54,6 @@ public class ScrabbleController{
      */
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
     }
 
     /**
@@ -79,11 +78,14 @@ public class ScrabbleController{
                 players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
             }
 
-            //output move to player
-            JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
+            
             //view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
             //proceed to next turn
             nextPlayer();
+
+            //output move to player
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
             
         
             if (score > 0) turnsWithoutScore = 0;
@@ -113,6 +115,7 @@ public class ScrabbleController{
         turnsWithoutScore++;
 
         //output move to player
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
         JOptionPane.showMessageDialog(view, "Turn passed.");
         
         //end game
@@ -148,7 +151,9 @@ public class ScrabbleController{
             turnsWithoutScore++;
 
             //output move to player
+            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
             JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
+            
 
             //end game
             if (turnsWithoutScore >= 6){
