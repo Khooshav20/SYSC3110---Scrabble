@@ -112,8 +112,8 @@ File Descriptions
  •Blank Tiles <br>
 
  - Khooshav Mundhoo <br>
- •Documentation <br>
  •AI Player <br>
+ •Documentation <br>
 
  - Lucas Warburton <br>
  •Blank Tiles <br>
