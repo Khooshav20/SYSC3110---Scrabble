@@ -14,7 +14,6 @@ import java.util.List;
  * @author Lucas Warburton (101276823)
  */
 public class AIPlayer extends Player {
-    private int counter = 0;
     private HashMap<String, ArrayList<String[]>> results;
 
     public AIPlayer() {
@@ -127,9 +126,7 @@ public class AIPlayer extends Player {
         }
 
         System.out.println(longestMove.tiles);
-        System.out.println(counter);
         System.out.println(results.size());
-        counter = 0;
         return longestMove;
     }
 
@@ -257,7 +254,6 @@ public class AIPlayer extends Player {
                 }
             }
         }
-        counter++;
         results.put(regex, words);
         
         return words;
