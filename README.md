@@ -103,6 +103,7 @@ File Descriptions
 
  - AIPlayer.java: An extension of Player which adds the ability to generate a move automatically.
  - PremiumTile.java: A tile which multiplies the score of either a whole word or an individual letter.
+ - BlankTile.java: A tile with no letter or score which can be assigned a letter.
 
 
  #Responsibilities:

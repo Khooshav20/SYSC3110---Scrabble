@@ -1,9 +1,6 @@
 import java.util.ArrayList;
-<<<<<<< HEAD
-=======
 import java.util.HashMap;
 import java.util.List;
->>>>>>> 2ff81f2c450392aff8945564e0f2be81dc15e9f4
 
 /**
  * AIPlayer represents an automated player in the Scrabble game.
