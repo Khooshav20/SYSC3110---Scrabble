@@ -1,4 +1,9 @@
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+import java.util.HashMap;
+import java.util.List;
+>>>>>>> 2ff81f2c450392aff8945564e0f2be81dc15e9f4
 
 /**
  * AIPlayer represents an automated player in the Scrabble game.
@@ -12,8 +17,11 @@ import java.util.ArrayList;
  * @author Lucas Warburton (101276823)
  */
 public class AIPlayer extends Player {
+    private int counter = 0;
+    private static HashMap<String, ArrayList<String[]>> results;
+
     public AIPlayer() {
-        
+        if (results == null) results = new HashMap<>();
     }
 
     /**
@@ -118,6 +126,11 @@ public class AIPlayer extends Player {
                 }
             }
         }
+
+        System.out.println(longestMove.tiles);
+        System.out.println(counter);
+        System.out.println(results.size());
+        counter = 0;
         return longestMove;
     }
 
@@ -131,7 +144,10 @@ public class AIPlayer extends Player {
      * @return whether it is connected
      */
     public boolean isConnectedHorizontal(Square[][] board, int i, int j, int currentLength) {
-        if (j - 1 >= 0 && !(board[i][j-1] instanceof BlankSquare)) { //if the word extends an existing tile
+        // TODO: for each indirectly connected point, check if there are any words
+        // that are able to fit, if so return true otherwise return false for optimization
+        // maybe include the letters that must be included so they are able to be checked as well
+        if (j - 1 >= 0 && !(board[i][j-1] instanceof BlankSquare)) {
             return true;
         }
         if (j + currentLength < 15 && !(board[i][j+currentLength] instanceof BlankSquare)) { //if the word is extended by an existing tile
@@ -194,28 +210,43 @@ public class AIPlayer extends Player {
     public ArrayList<String[]> getValidWords(String regex) {
         ArrayList<String[]> words = new ArrayList<>();
 
-        for (String word: Board.words) { //for every word in dictionary
-            if (word.length() == regex.length() && word.matches(regex)) {
-                String newWord = "";
-                String scrabbleWord = "";
-                for (int i = 0; i < regex.length(); i++) { //build strings of whole word and letters to be placed on the board
-                    if (word.charAt(i) != regex.charAt(i)) {
-                        newWord += Character.toUpperCase(word.charAt(i));
-                        scrabbleWord += Character.toUpperCase(word.charAt(i));
-                    }
-                    else scrabbleWord += word.charAt(i);
-                }
+        if (results.containsKey(regex)) {
+            words = results.get(regex);
+        }
 
-                String[] tempWords = new String[2];
-                tempWords[0] = scrabbleWord;
-                tempWords[1] = newWord;
-                if (hasLetters(newWord.toUpperCase())) { //if AIPlayer has letters to be placed
+        if (words.size() == 0) {
+            for (String word: Board.words) {
+                if (word.length() == regex.length() && word.matches(regex)) {
+                    String newWord = "";
+                    String scrabbleWord = "";
+                    for (int i = 0; i < regex.length(); i++) {
+                        if (word.charAt(i) != regex.charAt(i)) {
+                            newWord += Character.toUpperCase(word.charAt(i));
+                            scrabbleWord += Character.toUpperCase(word.charAt(i));
+                        }
+                        else scrabbleWord += word.charAt(i);
+                    }
+    
+                    String[] tempWords = new String[2];
+                    tempWords[0] = scrabbleWord;
+                    tempWords[1] = newWord;
                     words.add(tempWords);
                 }
             }
+            counter++;
+        }
+        results.put(regex, words);
+
+        ArrayList<String[]> finalWords = new ArrayList<>();
+
+        for (String[] word: words) {
+            if (hasLetters(word[1])) {
+                finalWords.add(word);
+            }
         }
 
-        return words;
+        
+        return finalWords;
     }
 }
 
