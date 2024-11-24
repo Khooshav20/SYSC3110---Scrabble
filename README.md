@@ -89,6 +89,41 @@ File Descriptions
 - Alexander Gardiner <br>
  •Test cases <br>
 
+
+ Milestone 3
+
+ This milestone adds important gameplay functionality in the existence of premium tiles (2x and 3x multipliers for both word and letter), and blank tiles which can be assigned any letter. It also includes the option to add AI players to a game, which play as many tiles per move as possible. Unit tests are included for all additional gameplay mechanics.
+
+ Features:
+ - Blank Tiles
+ - Premium Tiles
+ - AI Player
+
+ File Descriptions:
+
+ - AIPlayer.java: An extension of Player which adds the ability to generate a move automatically.
+ - PremiumTile.java: A tile which multiplies the score of either a whole word or an individual letter.
+ - BlankTile.java: A tile with no letter or score which can be assigned a letter.
+
+
+ #Responsibilities:
+ - Marc Fernandes <br>
+ •AI Player <br>
+ •Blank Tiles <br>
+
+ - Khooshav Mundhoo <br>
+ •AI Player <br>
+ •Documentation <br>
+
+ - Lucas Warburton <br>
+ •Blank Tiles <br>
+ •Premium Tiles <br>
+ •README <br>
+
+ - Alexander Gardiner <br>
+ •Blank Tile Tests <br>
+ •Premium Tile Tests <br>
+
 How to run?
 
  •Install IntelliJ IDEA <br>
