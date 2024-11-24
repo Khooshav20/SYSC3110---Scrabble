@@ -10,6 +10,8 @@ import java.util.List;
  *
  *
  * @author Khooshav Bundhoo (101132063)
+ * @author Marc Fernandes (101288346)
+ * @author Lucas Warburton (101276823)
  */
 public class AIPlayer extends Player {
     private int counter = 0;
@@ -20,32 +22,33 @@ public class AIPlayer extends Player {
     }
 
     /**
-     * Generates the best possible move for the AI player based on the current state
+     * Generates the longest possible move for the AI player based on the current state
      * of the board.
      * 
      * @param board The current game board
      * @return The best Move the AI can make, or null if no valid move is possible
      */
-    public Location generateBestMove(Board boardObject) {
+    public Location generateLongestMove(Board boardObject) {
         Square[][] board = boardObject.getBoard();
         Location longestMove = new Location(0, 0, "", "", false);
         // horizontal
         for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                if (board[i][j] instanceof BlankSquare) {
+            for (int j = 0; j < 15; j++) { 
+                if (board[i][j] instanceof BlankSquare) { //for every empty tile on board
                     int temp = 0;
                     for (int k = j; k < 15; k++) {
-                        if (board[i][k] instanceof BlankSquare) temp++;
+                        if (board[i][k] instanceof BlankSquare) temp++; //count empty squares after original tile
                     }
 
-                    int currentLength = Math.min(7, temp);
+                    int currentLength = Math.min(7, temp); //set length of word being searched for to max possible
                     while (isConnectedHorizontal(board, i, j, currentLength) && currentLength > longestMove.tiles.length()) {
                         String regex = "";
                         int numLetters = 0;
+
+                        //build regex including only the letters in the word already on the board
                         for (int k = j - 1; k >= 0 && !(board[i][k] instanceof BlankSquare); k--) regex = board[i][k].getLetter() + regex;
                         for (int k = j; k + numLetters < 15 && (k < currentLength + j || !(board[i][k + numLetters] instanceof BlankSquare));) {
                             if (!(board[i][k + numLetters] instanceof BlankSquare)) {
-                                
                                 regex += board[i][k + numLetters].getLetter();
                                 numLetters++;
                             }
@@ -54,13 +57,14 @@ public class AIPlayer extends Player {
                                 k++;
                             };
                         }
-
                         regex = regex.toLowerCase();
+
                         ArrayList<String[]> words = getValidWords(regex);
+
                         for (String[] word: words) {
                             Tile[] tempTiles = removeLetters(word[1]);
                             Location tempLocation = new Location(i, j, word[1], word[0], true);
-                            if (boardObject.isValidMove(tempTiles, word[0], tempLocation.location)) {
+                            if (boardObject.isValidMove(tempTiles, word[0], tempLocation.location)) { //check if word is a valid move
                                 longestMove = tempLocation;
                                 addTiles(tempTiles);
                                 break;
@@ -77,17 +81,18 @@ public class AIPlayer extends Player {
         // vertical
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
-                if (board[i][j] instanceof BlankSquare) {
+                if (board[i][j] instanceof BlankSquare) { //for every empty tile on board
                     int temp = 0;
                     for (int k = i; k < 15; k++) {
-                        if (board[k][j] instanceof BlankSquare) temp++;
+                        if (board[k][j] instanceof BlankSquare) temp++; //count empty squares after original tile
                     }
 
-                    int currentLength = Math.min(7, temp);
-                    
+                    int currentLength = Math.min(7, temp); //set length of word being searched for to max possible
                     while (isConnectedVertical(board, i, j, currentLength) && currentLength > longestMove.tiles.length()) {
                         String regex = "";
                         int numLetters = 0;
+
+                        //build regex including only the letters in the word already on the board
                         for (int k = i - 1; k >= 0 && !(board[k][j] instanceof BlankSquare); k--) regex = board[k][j].getLetter() + regex;
                         for (int k = i; k + numLetters < 15 && (k < currentLength + i || !(board[k + numLetters][j] instanceof BlankSquare));) {
                             if (!(board[k + numLetters][j] instanceof BlankSquare)) {
@@ -99,12 +104,13 @@ public class AIPlayer extends Player {
                                 k++;
                             };
                         }
-
                         regex = regex.toLowerCase();
+
                         ArrayList<String[]> words = getValidWords(regex);
+
                         for (String[] word: words) {
                             Tile[] tempTiles = removeLetters(word[1]);
-                            if (boardObject.isValidMove(tempTiles, word[0], longestMove.location)) {
+                            if (boardObject.isValidMove(tempTiles, word[0], longestMove.location)) { //check if word is a valid move
                                 longestMove = new Location(i, j, word[1], word[0], false);
                                 addTiles(tempTiles);
                                 break;
@@ -125,6 +131,15 @@ public class AIPlayer extends Player {
         return longestMove;
     }
 
+    /**
+     * Checks if a horizontal word connects to previously placed tiles.
+     * 
+     * @param board the board of play
+     * @param i the row of the first letter
+     * @param j the column of the first letter
+     * @param currentLength the length of the word
+     * @return whether it is connected
+     */
     public boolean isConnectedHorizontal(Square[][] board, int i, int j, int currentLength) {
         // TODO: for each indirectly connected point, check if there are any words
         // that are able to fit, if so return true otherwise return false for optimization
@@ -132,18 +147,18 @@ public class AIPlayer extends Player {
         if (j - 1 >= 0 && !(board[i][j-1] instanceof BlankSquare)) {
             return true;
         }
-        if (j + currentLength < 15 && !(board[i][j+currentLength] instanceof BlankSquare)) {
+        if (j + currentLength < 15 && !(board[i][j+currentLength] instanceof BlankSquare)) { //if the word is extended by an existing tile
             return true;
         }
         
         for (int k = j; k < 15 && k < j + currentLength; k++) {
-            if (!(board[i][k] instanceof BlankSquare)) {
+            if (!(board[i][k] instanceof BlankSquare)) { //if the word passes through an existing tile
                 return true;
             }
-            if (i - 1 >= 0 && !(board[i-1][k] instanceof BlankSquare)) {
+            if (i - 1 >= 0 && !(board[i-1][k] instanceof BlankSquare)) { //if the word is below an existing tile
                 return true;
             }
-            if (i + 1 < 15 && !(board[i+1][k] instanceof BlankSquare)) {
+            if (i + 1 < 15 && !(board[i+1][k] instanceof BlankSquare)) { //if the word is above an existing tile
                 return true;
             }
         }
@@ -151,22 +166,31 @@ public class AIPlayer extends Player {
         return false;
     }
 
+    /**
+     * Checks if a vertical word connects to previously placed tiles.
+     * 
+     * @param board the board of play
+     * @param i the row of the first letter
+     * @param j the column of the first letter
+     * @param currentLength the length of the word
+     * @return whether it is connected
+     */
     public boolean isConnectedVertical(Square[][] board, int i, int j, int currentLength) {
-        if (i - 1 >= 0 && !(board[i-1][j] instanceof BlankSquare)) {
+        if (i - 1 >= 0 && !(board[i-1][j] instanceof BlankSquare)) { //if the word extends an existing tile
             return true;
         }
-        if (i + currentLength < 15 && !(board[i+currentLength][j] instanceof BlankSquare)) {
+        if (i + currentLength < 15 && !(board[i+currentLength][j] instanceof BlankSquare)) { //if the word is extended by an existing tile
             return true;
         }
         
-        for (int k = i; k < 15 && k < i + currentLength; k++) {
+        for (int k = i; k < 15 && k < i + currentLength; k++) { //if the word passes through an existing tile
             if (!(board[k][j] instanceof BlankSquare)) {
                 return true;
             }
-            if (j - 1 >= 0 && !(board[k][j-1] instanceof BlankSquare)) {
+            if (j - 1 >= 0 && !(board[k][j-1] instanceof BlankSquare)) { //if the word is to the right of an existing tile
                 return true;
             }
-            if (j + 1 < 15 && !(board[k][j+1] instanceof BlankSquare)) {
+            if (j + 1 < 15 && !(board[k][j+1] instanceof BlankSquare)) { //if the word is to the left of an existing tile
                 return true;
             }
         }
@@ -174,6 +198,12 @@ public class AIPlayer extends Player {
         return false;
     }
 
+    /**
+     * Gets a list of valid words that match a given regex
+     * 
+     * @param regex
+     * @return the list of valid words, including both the whole word and the letters to be placed on the board
+     */
     public ArrayList<String[]> getValidWords(String regex) {
         ArrayList<String[]> words = new ArrayList<>();
 

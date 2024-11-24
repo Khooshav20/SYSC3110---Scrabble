@@ -20,6 +20,7 @@ public class ScrabbleEvent extends EventObject{
      * @param currentPlayer The index of the player whose turn it is
      * @param numLetters The number of tiles in the letter bag
      * @param model The object creating this event
+     * @param board The board of the current game
      */
     public ScrabbleEvent(Player[] players, int currentPlayer, int numLetters, ScrabbleController model, Square[][] board){
         super(model);

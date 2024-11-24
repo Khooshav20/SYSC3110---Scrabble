@@ -117,37 +117,41 @@ public class View extends JFrame implements ActionListener{
                         if (buttonSource.getText().length() == 1){
                             // find rack button that is blank and place it back
                             for (int k = 0; k < 7; k++){
-                                if (rackButtons[k].getText().equals("")){
-                                    System.out.println("hi");
-                                    if (buttonSource.getBackground().equals(new Color(0x89cff0))){
+                                if (rackButtons[k].getText().equals("")){ //if rack button is empty
+                                    if (buttonSource.getBackground().equals(new Color(0x89cff0))){ //if button being replaced is blank
                                         buttonSource.setBackground(new Color(0xffffff));
                                         rackButtons[k].setText(".");
                                         rackButtons[k].setBackground(new Color(0x89cff0));
-                                    } else {
+                                    } else { //button being replaced is regular Tile
                                         rackButtons[k].setText(buttonSource.getText());
                                     }
                                     rackButtons[k].setEnabled(true);
                                     int row = 0;
                                     int col = 0;
-                                    for (; row < 15; row++){
+                                    for (; row < 15; row++){ //find indices of tile being vacated
                                         for (col = 0; col < 15 && boardButtons[row][col] != buttonSource; col++);
                                         if (col < 15) break;
                                     }
-                                    if (row == 7 && col == 7){
+                                    if (row == 7 && col == 7){ //if center tile
                                         buttonSource.setText(" * ");
                                         buttonSource.setBackground(new Color(0xff99ff));
-                                    } else if (board[row][col] instanceof PremiumTile){
+                                    } else if (board[row][col] instanceof PremiumTile){ 
                                         PremiumTile temp = (PremiumTile)board[row][col];
-                                        if (temp.getIsWord()){
+                                        if (temp.getIsWord()){ //if word multiplier
                                             buttonSource.setText(temp.getMultiplier() + "W");
-                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) buttonSource.setBackground(new Color(0xff99ff));
-                                            else buttonSource.setBackground(new Color(0xff0000));
-                                        } else {
+                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) //if 2x word multiplier
+                                                buttonSource.setBackground(new Color(0xff99ff));
+                                            else //if 3x word multiplier
+                                                buttonSource.setBackground(new Color(0xff0000));
+                                        } else { //letter multiplier
                                             buttonSource.setText(temp.getMultiplier() + "L");
-                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) buttonSource.setBackground(new Color(0x68ccff));
-                                            else buttonSource.setBackground(new Color(0x0033ff));
+                                            if (((PremiumTile)board[row][col]).getMultiplier() == 2) //2x letter multiplier
+                                                buttonSource.setBackground(new Color(0x68ccff));
+                                            else //3x letter multiplier
+                                                buttonSource.setBackground(new Color(0x0033ff));
                                         }
-                                    } else buttonSource.setText("");
+                                    } else //tile being vacated is empty tile
+                                        buttonSource.setText("");
                                     buttonSource.setEnabled(false);
                                     currentButton = null;
                                     break;
@@ -362,6 +366,12 @@ public class View extends JFrame implements ActionListener{
         return input;
     }
 
+    /**
+     * Determine how many AI players should be created,
+     * 
+     * @param humanPlayers the number of human players in the game
+     * @return
+     */
     public int getAIPlayers(int humanPlayers) {
         if (humanPlayers == 4) return 0;
         // flag to check if input is valid
@@ -373,7 +383,7 @@ public class View extends JFrame implements ActionListener{
             }
             valid = true;
             try {
-                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of AI players to play Scrabble (" + (2-humanPlayers) + "-" + (4-humanPlayers) + ")."));
+                input = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter the amount of AI players to play Scrabble (" + Math.max(2-humanPlayers, 0) + "-" + (4-humanPlayers) + ")."));
                 // number is valid but not in between 2 and 4
                 if (input > 4 - humanPlayers || input < 2 - humanPlayers) {
                     valid = false;

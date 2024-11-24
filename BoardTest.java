@@ -40,8 +40,46 @@ public class BoardTest {
         Square[][] boardArray = board.getBoard();
         assertNotNull("Board should be initialized", boardArray);
         assertEquals("Board should be 15x15", 15, boardArray.length);
-        assertTrue("All squares should be initialized as BlankSquare",
-                boardArray[0][0] instanceof BlankSquare);
+        assertTrue("All squares should be initialized as BlankSquare", boardArray[0][0] instanceof BlankSquare);
+    }
+
+    @Test
+    public void testBlankSquaresPresence() {
+        Square[][] boardArray = board.getBoard();
+        assertTrue("Top-left square should be a BlankSquare", boardArray[0][0] instanceof BlankSquare);
+        assertTrue("Center square should be a BlankSquare", boardArray[7][7] instanceof BlankSquare);
+    }
+
+    @Test
+    public void testPremiumTilesPresence() {
+        Square[][] boardArray = board.getBoard();
+
+        // Example locations for premium tiles; adjust according to your board configuration.
+        int[][] premiumTileLocations = {
+                {0, 0}, {8, 6}, {14, 14}, {0, 7}, {7, 0}
+        };
+
+        for (int[] location : premiumTileLocations) {
+            int row = location[ROW];
+            int col = location[COLUMN];
+            assertTrue("Square at (" + row + ", " + col + ") should be a PremiumTile", boardArray[row][col] instanceof PremiumTile);
+
+            PremiumTile premiumTile = (PremiumTile) boardArray[row][col];
+            assertTrue("PremiumTile multiplier should be > 1", premiumTile.getMultiplier() > 1);
+        }
+    }
+
+    @Test
+    public void testPremiumTileProperties() {
+        Square[][] boardArray = board.getBoard();
+
+        // Example location for a premium tile
+        int row = 0, col = 0;
+        if (boardArray[row][col] instanceof PremiumTile) {
+            PremiumTile premiumTile = (PremiumTile) boardArray[row][col];
+            assertEquals("PremiumTile multiplier should match", 3, premiumTile.getMultiplier());
+            assertTrue("PremiumTile should be a word multiplier", premiumTile.getIsWord());
+        }
     }
 
     @Test
@@ -69,11 +107,13 @@ public class BoardTest {
 
     @Test
     public void testPlayMoveAndScore() {
-        Tile[] tiles = { new Tile('H', 4), new Tile('E', 1), new Tile('L', 1), new Tile('L', 1), new Tile('O', 1) };
+        Tile[] tiles = { new Tile('H', 4), new Tile('E', 2), new Tile('L', 2), new Tile('L', 1), new Tile('O', 2) };
         int[] location = testStringToLocation("8H");
-
+        // Due to premium tiles:
+        // Letter at [8][8] ('H') gives all letters x2 score
+        // Letter at [8][12] ('O') gives the 'O' x2 score
         int score = board.playMove(tiles, "HELLO", location);
-        assertEquals("Score should be calculated correctly", 8, score);  // Adjust based on scoring logic
+        assertEquals("Score should be calculated correctly", 26, score);  // Adjust based on scoring logic
     }
 
     @Test
