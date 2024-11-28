@@ -8,6 +8,8 @@
  */
 
 import javax.swing.*;
+
+import java.awt.ScrollPaneAdjustable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class ScrabbleController implements Serializable{
 
         this.view = view;
         
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        updateView();
     }
 
     /**
@@ -87,7 +89,7 @@ public class ScrabbleController implements Serializable{
             nextPlayer();
 
             //output move to player
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            updateView();
             JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
             
         
@@ -118,7 +120,7 @@ public class ScrabbleController implements Serializable{
         turnsWithoutScore++;
 
         //output move to player
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        updateView();
         JOptionPane.showMessageDialog(view, "Turn passed.");
         
         //end game
@@ -154,7 +156,7 @@ public class ScrabbleController implements Serializable{
             turnsWithoutScore++;
 
             //output move to player
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            updateView();
             JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
             
 
@@ -208,7 +210,21 @@ public class ScrabbleController implements Serializable{
     public static ScrabbleController load(String filename) throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(filename);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        ScrabbleController temp = (ScrabbleController) objectInputStream.readObject();
         objectInputStream.close();
-        return (ScrabbleController) objectInputStream.readObject();
+        return temp;
+    }
+
+    public void updateView(){
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+    }
+
+    public void printHand(){
+        for (Tile s : players[currentPlayer].getTiles()) System.out.print(s.getLetter());
+        System.out.println();
+    }
+
+    public void setView(View v){
+        view = v;
     }
 }

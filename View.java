@@ -523,10 +523,11 @@ public class View extends JFrame implements ActionListener{
                     String filename = JOptionPane.showInputDialog("Enter the filename from which would like to load your game (or \"cancel\" to cancel)");
                     if (filename.equals("cancel")) return;
                     sc = ScrabbleController.load(filename);
-                    updateDisplay();
+                    sc.setView(this);
+                    sc.updateView();
                     return;
                 } catch(Exception ohno){
-                    JOptionPane.showMessageDialog(this, "Load failed");
+                    JOptionPane.showMessageDialog(this, "Load failed.");
                 }
             }
         } else if (e.getSource() == saveItem){
@@ -534,6 +535,7 @@ public class View extends JFrame implements ActionListener{
             while (!saved){
                 String filename = JOptionPane.showInputDialog("Enter the filename in which would like to save your game (or \"cancel\" to cancel)");
                 saved = sc.save(filename);
+                if (!saved) JOptionPane.showMessageDialog(this, "Save failed.");
             }
         }
     }
