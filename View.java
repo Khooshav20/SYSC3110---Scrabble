@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
     
-    private static Font font = new Font("Comic Sans MS", Font.BOLD, 17);
+    private static Font font = new Font("Comic Sans MS", Font.BOLD, 16);
 
     private JPanel boardPanel;
     private JButton[][] boardButtons;

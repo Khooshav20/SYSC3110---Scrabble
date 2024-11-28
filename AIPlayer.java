@@ -124,8 +124,6 @@ public class AIPlayer extends Player{
             }
         }
 
-        System.out.println(longestMove.tiles);
-        System.out.println(results.size());
         return longestMove;
     }
 
