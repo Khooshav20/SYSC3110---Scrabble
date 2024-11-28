@@ -219,11 +219,6 @@ public class ScrabbleController implements Serializable{
         view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
     }
 
-    public void printHand(){
-        for (Tile s : players[currentPlayer].getTiles()) System.out.print(s.getLetter());
-        System.out.println();
-    }
-
     public void setView(View v){
         view = v;
     }
