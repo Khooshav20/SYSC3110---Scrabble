@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 /**
  * The Tile class keeps track of the letter and score of a particular tile.
  * 
@@ -5,7 +7,7 @@
  * @version 22/10/2024
  */
 
-public class Tile implements Square {
+public class Tile implements Square, Serializable{
     protected char letter;
     private int score;
 

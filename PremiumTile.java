@@ -1,4 +1,4 @@
-public class PremiumTile extends BlankSquare{
+public class PremiumTile extends BlankSquare {
     private int multiplier;
     private boolean isWord;
 

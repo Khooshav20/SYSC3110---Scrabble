@@ -4,6 +4,6 @@
  * @version 22/10/2024
  */
 
-public interface Square {
+public interface Square{
     public char getLetter();
 }

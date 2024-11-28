@@ -26,6 +26,11 @@ public class View extends JFrame implements ActionListener{
     private JPanel rackPanel;
     private JButton[] rackButtons;
 
+    JMenuBar menubar;
+    JMenu fileMenu;
+    JMenuItem loadItem;
+    JMenuItem saveItem;
+
     private JPanel LBTileColumn;
 
     private ArrayList<JLabel> scoreLabels;
@@ -264,6 +269,20 @@ public class View extends JFrame implements ActionListener{
         swapButton.addActionListener(this);
         swapButton.setFont(font);
         mainPanel.add(swapButton);
+
+        menubar = new JMenuBar();
+        setJMenuBar(menubar);
+
+        fileMenu = new JMenu("File Menu");
+        menubar.add(fileMenu);
+
+        saveItem = new JMenuItem("Save");
+        fileMenu.add(saveItem);
+        saveItem.addActionListener(this);
+
+        loadItem = new JMenuItem("Load");
+        fileMenu.add(loadItem);
+        loadItem.addActionListener(this);
         
         LBTileColumn.setSize(90, 450);
         LBTileColumn.setBackground(Color.PINK);
@@ -497,6 +516,24 @@ public class View extends JFrame implements ActionListener{
             while (!sc.swap(input)) {
                 JOptionPane.showMessageDialog(this, "Incorrect input, try again");
                 input = JOptionPane.showInputDialog(this, "Please enter the tiles you want to swap");
+            }
+        }else if (e.getSource() == loadItem){
+            while (true){
+                try{
+                    String filename = JOptionPane.showInputDialog("Enter the filename from which would like to load your game (or \"cancel\" to cancel)");
+                    if (filename.equals("cancel")) return;
+                    sc = ScrabbleController.load(filename);
+                    updateDisplay();
+                    return;
+                } catch(Exception ohno){
+                    JOptionPane.showMessageDialog(this, "Load failed");
+                }
+            }
+        } else if (e.getSource() == saveItem){
+            boolean saved = false;
+            while (!saved){
+                String filename = JOptionPane.showInputDialog("Enter the filename in which would like to save your game (or \"cancel\" to cancel)");
+                saved = sc.save(filename);
             }
         }
     }

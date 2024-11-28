@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * AIPlayer represents an automated player in the Scrabble game.
@@ -13,7 +12,7 @@ import java.util.List;
  * @author Marc Fernandes (101288346)
  * @author Lucas Warburton (101276823)
  */
-public class AIPlayer extends Player {
+public class AIPlayer extends Player{
     private HashMap<String, ArrayList<String[]>> results;
 
     public AIPlayer() {

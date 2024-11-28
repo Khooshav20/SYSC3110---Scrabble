@@ -8,11 +8,14 @@
  */
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class ScrabbleController{
+public class ScrabbleController implements Serializable{
     private LetterBag letterBag; // Model representing the game state
     private Player[] players; // Model representing the game state
     private Board board; // Model representing the game state
@@ -187,5 +190,25 @@ public class ScrabbleController{
                 this.play(l.tiles, l.word, l.location);
             }
         }
+    }
+
+    public boolean save(String filename){
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
+
+    public static ScrabbleController load(String filename) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(filename);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        objectInputStream.close();
+        return (ScrabbleController) objectInputStream.readObject();
     }
 }

@@ -14,7 +14,7 @@ import java.util.*;
  * @version 22/10/2024
  */
 
-public class Board {
+public class Board implements Serializable{
     private Square[][] board;
 
     public static final int ROW = 0;
