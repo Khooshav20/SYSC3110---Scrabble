@@ -103,7 +103,6 @@ public class Board implements Serializable{
      * @return A formatted string for the move in "WORD xy +score" notation
      */
     public int playMove(Tile[] tiles, String word, int[] location) {
-        System.out.println(word);
         int score = 0;
         int numBlank = 0;
         int mainMultiplier = 1;
@@ -434,7 +433,46 @@ public class Board implements Serializable{
         return sb.toString();
     }
 
+    public String toXML(){
+        String xml = "";
+        for (Square[] row: board){
+            for (Square s: row){
+                if (s instanceof PremiumTile){
+                    xml += "\n" + ((PremiumTile)s).toXML() + "\n\n";
+                } else if (s instanceof MiddleTile){
+                    xml += ((MiddleTile)s).toXML() + "\n";
+                } else {
+                    xml += s.toXML() + "\n";
+                }
+            }
+        }
+        return xml;
+    }
+
     public Square[][] getBoard() {
         return board;
+    }
+
+    public void exportToXMLFile(String filename){
+        try{
+            FileWriter xmlFile = new FileWriter(filename);
+            xmlFile.write(this.toXML());
+            xmlFile.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void importFromXMLFile(String filename){
+        BoardParser parser = new BoardParser();
+        try{
+            board = (parser.readXMLBoardFile(filename));
+        } catch (IOException e){
+            e.getMessage();
+        }
+    }
+
+    public void setBoard(Square[][] boardArray){
+        board = boardArray;
     }
 }

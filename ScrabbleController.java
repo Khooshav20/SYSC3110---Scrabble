@@ -31,7 +31,7 @@ public class ScrabbleController implements Serializable{
      * @param numPlayers The number of players
      * @throws IOException If it fails to read dictionary.txt or files.txt
      */
-    public ScrabbleController (View view, int numPlayers, int numAIPlayers) throws IOException {
+    public ScrabbleController (View view, int numPlayers, int numAIPlayers, Square[][] boardArray) throws IOException {
         letterBag = new LetterBag();
 
         players = new Player[numPlayers + numAIPlayers];
@@ -45,6 +45,7 @@ public class ScrabbleController implements Serializable{
         }
 
         board = new Board();
+        board.setBoard(boardArray);
 
         turnsWithoutScore = 0;
         currentPlayer = 0;

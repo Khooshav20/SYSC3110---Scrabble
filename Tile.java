@@ -1,5 +1,3 @@
-import java.io.Serializable;
-
 /**
  * The Tile class keeps track of the letter and score of a particular tile.
  * 
@@ -7,7 +5,7 @@ import java.io.Serializable;
  * @version 22/10/2024
  */
 
-public class Tile implements Square, Serializable{
+public class Tile implements Square {
     protected char letter;
     private int score;
 
@@ -49,5 +47,10 @@ public class Tile implements Square, Serializable{
         if (!(o instanceof Tile)) return false;
         Tile otherTile = (Tile) o;
         return otherTile.score == this.score && otherTile.letter == this.letter;
+    }
+
+    @Override
+    public String toXML() {
+        return "<Tile>\n\t<letter>" + letter + "</letter>\n<score>" + score + "</score>\n</Tile>";
     }
 }

@@ -188,7 +188,7 @@ public class View extends JFrame implements ActionListener{
 
         // initialize ScrabbleController and show frame
         int numPlayers = getPlayers();
-        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers));
+        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers), board);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -645,8 +645,8 @@ public class View extends JFrame implements ActionListener{
                 previousPlacement = i + 1;
                 previousScore = score;
             }
-            players[index].addScore(-10000);
-            scores[index] -= 10000;
+            players[index].addScore(-10000000);
+            scores[index] -= 10000000;
         }
 
         // show the message then close
@@ -668,8 +668,25 @@ public class View extends JFrame implements ActionListener{
         return -1;
     }
 
+    private static void getBoardInput(Board board){
+        while (true){
+            try{
+                String filename = JOptionPane.showInputDialog("Enter the name of the file from which you would like to import a board (enter \"default\" for default board).");
+                if (filename.toLowerCase().equals("default")){
+                    return;
+                }
+                board.importFromXMLFile(filename);
+                return;
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         Board board = new Board();
+        board.exportToXMLFile("default_board.txt");
+        getBoardInput(board);
         new View(board.getBoard());
     }
 }
