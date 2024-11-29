@@ -57,10 +57,13 @@ public class AIPlayer extends Player {
                                 k++;
                             };
                         }
+                        // lowercase regex to allow matching with dictionary
                         regex = regex.toLowerCase();
 
+                        // find all valid words that could be played with the tiles given
                         ArrayList<String[]> words = getValidWords(regex);
 
+                        // try every word, if it works then its a new longest move
                         for (String[] word: words) {
                             Tile[] tempTiles = removeLetters(word[1]);
                             Location tempLocation = new Location(i, j, word[1], word[0], true);
@@ -72,6 +75,7 @@ public class AIPlayer extends Player {
                             addTiles(tempTiles);
                         }
 
+                        // search for shorter words
                         currentLength--;
                     }
                 }
@@ -104,10 +108,13 @@ public class AIPlayer extends Player {
                                 k++;
                             };
                         }
+                        // lowercase regex to allow matching with dictionary
                         regex = regex.toLowerCase();
 
+                        // find all valid words that could be played with the tiles given
                         ArrayList<String[]> words = getValidWords(regex);
 
+                        // try every word, if it works then its a new longest move
                         for (String[] word: words) {
                             Tile[] tempTiles = removeLetters(word[1]);
                             Location tempLocation = new Location(i, j, word[1], word[0], false);
@@ -119,6 +126,7 @@ public class AIPlayer extends Player {
                             addTiles(tempTiles);
                         }
 
+                        // search for shorter words
                         currentLength--;
                     }
                 }
@@ -206,15 +214,15 @@ public class AIPlayer extends Player {
                 connected = true;
             }
             regex.reverse();
+            // add the letter that the word trying to be played aligns on
             regex.append(".");
             for (int l = i + 1; l < 15 && !(board[i][l] instanceof BlankSquare); l++) { //if the word is above an existing tile
                 regex.append(board[i][l].getLetter());
                 connected = true;
             }
+            // if there are any letters above or below, check to see if any words are possible
             if (regex.length() > 1) {
-                //System.out.println(regex);
                 if (getValidWords(regex.toString().toLowerCase()).size() == 0) return false;
-                //System.out.println("hello");
             }
         }
 
@@ -228,14 +236,19 @@ public class AIPlayer extends Player {
      * @return the list of valid words, including both the whole word and the letters to be placed on the board
      */
     public ArrayList<String[]> getValidWords(String regex) {
+        // all words that are valid
         ArrayList<String[]> words = new ArrayList<>();
 
+        // if results already cached result, return result
         if (results.containsKey(regex)) {
             return results.get(regex);
         }
 
+        // for every word in the dictionary
         for (String word: Board.words) {
+            // if the word is the correct length and matches the regex
             if (word.length() == regex.length() && word.matches(regex)) {
+                // find all letters needed to play the word
                 String newWord = "";
                 String scrabbleWord = "";
                 for (int i = 0; i < regex.length(); i++) {
@@ -246,6 +259,7 @@ public class AIPlayer extends Player {
                     else scrabbleWord += word.charAt(i);
                 }
 
+                // if the word has all the letters, then add to list of possible words
                 String[] tempWords = new String[2];
                 tempWords[0] = scrabbleWord;
                 tempWords[1] = newWord;
@@ -254,6 +268,7 @@ public class AIPlayer extends Player {
                 }
             }
         }
+        // cache result
         results.put(regex, words);
         
         return words;
