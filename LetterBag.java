@@ -8,7 +8,7 @@ import java.util.*;
  * @version 20/10/2024
  */
 
-public class LetterBag {
+public class LetterBag implements Serializable{
     private List<Tile> letters;
 
     /**

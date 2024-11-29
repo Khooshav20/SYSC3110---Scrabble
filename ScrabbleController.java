@@ -8,11 +8,16 @@
  */
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 
-public class ScrabbleController{
+import java.awt.ScrollPaneAdjustable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class ScrabbleController implements Serializable{
     private LetterBag letterBag; // Model representing the game state
     private Player[] players; // Model representing the game state
     private Board board; // Model representing the game state
@@ -26,7 +31,7 @@ public class ScrabbleController{
      * @param numPlayers The number of players
      * @throws IOException If it fails to read dictionary.txt or files.txt
      */
-    public ScrabbleController (View view, int numPlayers, int numAIPlayers) throws IOException {
+    public ScrabbleController (View view, int numPlayers, int numAIPlayers, Square[][] boardArray) throws IOException {
         letterBag = new LetterBag();
 
         players = new Player[numPlayers + numAIPlayers];
@@ -40,13 +45,14 @@ public class ScrabbleController{
         }
 
         board = new Board();
+        board.setBoard(boardArray);
 
         turnsWithoutScore = 0;
         currentPlayer = 0;
 
         this.view = view;
         
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        updateView();
     }
 
     /**
@@ -84,7 +90,7 @@ public class ScrabbleController{
             nextPlayer();
 
             //output move to player
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            updateView();
             JOptionPane.showMessageDialog(view, word + " played for " + score + " points.");
             
         
@@ -115,7 +121,7 @@ public class ScrabbleController{
         turnsWithoutScore++;
 
         //output move to player
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        updateView();
         JOptionPane.showMessageDialog(view, "Turn passed.");
         
         //end game
@@ -151,7 +157,7 @@ public class ScrabbleController{
             turnsWithoutScore++;
 
             //output move to player
-            view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            updateView();
             JOptionPane.showMessageDialog(view, "Tiles " + exchangeString + " swapped.");
             
 
@@ -187,5 +193,34 @@ public class ScrabbleController{
                 this.play(l.tiles, l.word, l.location);
             }
         }
+    }
+
+    public boolean save(String filename){
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(filename);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
+
+    public static ScrabbleController load(String filename) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(filename);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        ScrabbleController temp = (ScrabbleController) objectInputStream.readObject();
+        objectInputStream.close();
+        return temp;
+    }
+
+    public void updateView(){
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+    }
+
+    public void setView(View v){
+        view = v;
     }
 }

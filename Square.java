@@ -6,4 +6,5 @@
 
 public interface Square {
     public char getLetter();
+    public String toXML();
 }

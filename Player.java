@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * The player class represents a player in a Scrabble game. Each player has a rack of
@@ -6,7 +7,7 @@ import java.util.ArrayList;
  * @author Alexander Gardiner, 101261196
  * @version 20/10/2024
  */
-public class Player {
+public class Player implements Serializable{
     protected ArrayList<Tile> rack; // Holds the player's tiles
     private int score; // Player's score
 

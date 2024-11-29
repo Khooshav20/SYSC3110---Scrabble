@@ -18,13 +18,18 @@ import java.awt.event.ActionListener;
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
     
-    private static Font font = new Font("Comic Sans MS", Font.BOLD, 17);
+    private static Font font = new Font("Comic Sans MS", Font.BOLD, 16);
 
     private JPanel boardPanel;
     private JButton[][] boardButtons;
 
     private JPanel rackPanel;
     private JButton[] rackButtons;
+
+    JMenuBar menubar;
+    JMenu fileMenu;
+    JMenuItem loadItem;
+    JMenuItem saveItem;
 
     private JPanel LBTileColumn;
 
@@ -183,7 +188,7 @@ public class View extends JFrame implements ActionListener{
 
         // initialize ScrabbleController and show frame
         int numPlayers = getPlayers();
-        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers));
+        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers), board);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -264,6 +269,20 @@ public class View extends JFrame implements ActionListener{
         swapButton.addActionListener(this);
         swapButton.setFont(font);
         mainPanel.add(swapButton);
+
+        menubar = new JMenuBar();
+        setJMenuBar(menubar);
+
+        fileMenu = new JMenu("File Menu");
+        menubar.add(fileMenu);
+
+        saveItem = new JMenuItem("Save");
+        fileMenu.add(saveItem);
+        saveItem.addActionListener(this);
+
+        loadItem = new JMenuItem("Load");
+        fileMenu.add(loadItem);
+        loadItem.addActionListener(this);
         
         LBTileColumn.setSize(90, 450);
         LBTileColumn.setBackground(Color.PINK);
@@ -498,6 +517,26 @@ public class View extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(this, "Incorrect input, try again");
                 input = JOptionPane.showInputDialog(this, "Please enter the tiles you want to swap");
             }
+        }else if (e.getSource() == loadItem){
+            while (true){
+                try{
+                    String filename = JOptionPane.showInputDialog("Enter the filename from which would like to load your game (or \"cancel\" to cancel)");
+                    if (filename.equals("cancel")) return;
+                    sc = ScrabbleController.load(filename);
+                    sc.setView(this);
+                    sc.updateView();
+                    return;
+                } catch(Exception ohno){
+                    JOptionPane.showMessageDialog(this, "Load failed.");
+                }
+            }
+        } else if (e.getSource() == saveItem){
+            boolean saved = false;
+            while (!saved){
+                String filename = JOptionPane.showInputDialog("Enter the filename in which would like to save your game (or \"cancel\" to cancel)");
+                saved = sc.save(filename);
+                if (!saved) JOptionPane.showMessageDialog(this, "Save failed.");
+            }
         }
     }
 
@@ -606,8 +645,8 @@ public class View extends JFrame implements ActionListener{
                 previousPlacement = i + 1;
                 previousScore = score;
             }
-            players[index].addScore(-10000);
-            scores[index] -= 10000;
+            players[index].addScore(-10000000);
+            scores[index] -= 10000000;
         }
 
         // show the message then close
@@ -629,8 +668,25 @@ public class View extends JFrame implements ActionListener{
         return -1;
     }
 
+    private static void getBoardInput(Board board){
+        while (true){
+            try{
+                String filename = JOptionPane.showInputDialog("Enter the name of the file from which you would like to import a board (enter \"default\" for default board).");
+                if (filename.toLowerCase().equals("default")){
+                    return;
+                }
+                board.importFromXMLFile(filename);
+                return;
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         Board board = new Board();
+        board.exportToXMLFile("default_board.txt");
+        getBoardInput(board);
         new View(board.getBoard());
     }
 }

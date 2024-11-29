@@ -15,4 +15,8 @@ public class BlankSquare implements Square {
     public char getLetter() {
         return ' ';
     }
+
+    public String toXML(){
+        return "<BlankSquare></BlankSquare>";
+    }
 }

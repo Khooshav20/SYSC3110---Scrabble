@@ -48,4 +48,9 @@ public class Tile implements Square {
         Tile otherTile = (Tile) o;
         return otherTile.score == this.score && otherTile.letter == this.letter;
     }
+
+    @Override
+    public String toXML() {
+        return "<Tile>\n\t<letter>" + letter + "</letter>\n<score>" + score + "</score>\n</Tile>";
+    }
 }
