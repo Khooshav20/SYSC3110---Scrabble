@@ -31,6 +31,10 @@ public class View extends JFrame implements ActionListener{
     JMenuItem loadItem;
     JMenuItem saveItem;
 
+    JMenu boardMenu;
+    JMenuItem undoItem;
+    JMenuItem redoItem;
+
     private JPanel LBTileColumn;
 
     private ArrayList<JLabel> scoreLabels;
@@ -63,23 +67,9 @@ public class View extends JFrame implements ActionListener{
         // MAIN BOARD
 
         boardButtons = new JButton[15][15];
-        boardButtons[7][7]= new JButton(" * ");
-        boardButtons[7][7].setBackground(new Color(0xff99ff));
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 // initialize button and set parameters
-                if (board[i][j] instanceof PremiumTile){
-                    if (((PremiumTile)board[i][j]).getIsWord()){
-                        boardButtons[i][j] = new JButton(((PremiumTile)board[i][j]).getMultiplier() + "W");
-                        if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0xff99ff));
-                        else boardButtons[i][j].setBackground(new Color(0xff0000));
-                    }
-                    else{
-                        boardButtons[i][j]= new JButton(((PremiumTile)board[i][j]).getMultiplier() + "L");
-                        if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0x68ccff));
-                        else boardButtons[i][j].setBackground(new Color(0x0033ff));
-                    }
-                }
                 if (boardButtons[i][j] == null){
                     boardButtons[i][j] = new JButton("");
                     boardButtons[i][j].setBackground(new Color(0xffffff));
@@ -186,6 +176,14 @@ public class View extends JFrame implements ActionListener{
             });
         }
 
+        boardMenu = new JMenu("Board");
+
+        undoItem = new JMenuItem("Undo...");
+        undoItem.addActionListener(this);
+
+        redoItem = new JMenuItem("Redo...");
+        redoItem.addActionListener(this);
+
         // initialize ScrabbleController and show frame
         int numPlayers = getPlayers();
         sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers), board);
@@ -283,6 +281,8 @@ public class View extends JFrame implements ActionListener{
         loadItem = new JMenuItem("Load");
         fileMenu.add(loadItem);
         loadItem.addActionListener(this);
+
+        menubar.add(boardMenu);
         
         LBTileColumn.setSize(90, 450);
         LBTileColumn.setBackground(Color.PINK);
@@ -537,7 +537,12 @@ public class View extends JFrame implements ActionListener{
                 saved = sc.save(filename);
                 if (!saved) JOptionPane.showMessageDialog(this, "Save failed.");
             }
+        } else if (e.getSource() == undoItem) {
+            sc.undo();
+        } else if (e.getSource() == redoItem) {
+            sc.redo();
         }
+
     }
 
     /**
@@ -575,6 +580,7 @@ public class View extends JFrame implements ActionListener{
         // PLAYERS
         scoreLabels = new ArrayList<JLabel>();
         scoreLabels.add(new JLabel("Players:"));
+        Square[][] board = se.getBoard();
         Player[] players = se.getPlayers();
         // for every player, add to the player list
         for (int i = 0; i < players.length; i++) {
@@ -588,6 +594,17 @@ public class View extends JFrame implements ActionListener{
             }
             scoreLabels.add(temp);
         }
+
+        // MENU ITEMS
+        undoItem = new JMenuItem("Undo...");
+        redoItem = new JMenuItem("Redo...");
+        undoItem.addActionListener(this);
+        redoItem.addActionListener(this);
+        undoItem.setEnabled(se.getUndoEnabled());
+        redoItem.setEnabled(se.getRedoEnabled());
+        boardMenu.removeAll();
+        boardMenu.add(undoItem);
+        boardMenu.add(redoItem);
 
         // RACK
         setRack(players[se.getCurrentPlayer()].getTiles());
@@ -607,7 +624,32 @@ public class View extends JFrame implements ActionListener{
                     boardButtons[i][j].setText(se.getBoard()[i][j].getLetter() + "");
                     boardButtons[i][j].setEnabled(false);
                 }
+                else {
+                    if (board[i][j] instanceof PremiumTile){
+                        if (((PremiumTile)board[i][j]).getIsWord()){
+                            boardButtons[i][j].setText(((PremiumTile)board[i][j]).getMultiplier() + "W");
+                            if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0xff99ff));
+                            else boardButtons[i][j].setBackground(new Color(0xff0000));
+                        }
+                        else{
+                            boardButtons[i][j].setText(((PremiumTile)board[i][j]).getMultiplier() + "L");;
+                            if (((PremiumTile)board[i][j]).getMultiplier() == 2) boardButtons[i][j].setBackground(new Color(0x68ccff));
+                            else boardButtons[i][j].setBackground(new Color(0x0033ff));
+                        }
+                        boardButtons[i][j].setEnabled(false);
+                    }
+                    else {
+                        boardButtons[i][j].setBackground(new Color(0xffffff));
+                        boardButtons[i][j].setText("  ");
+                        boardButtons[i][j].setEnabled(false);
+                    }
+                }
             }
+        }
+
+        if (!(board[7][7] instanceof Tile)) {
+            boardButtons[7][7].setText(" * ");
+            boardButtons[7][7].setBackground(new Color(0xff99ff));
         }
 
         // update after status update

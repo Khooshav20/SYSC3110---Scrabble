@@ -1,4 +1,4 @@
-public class MiddleTile extends BlankSquare {
+public class MiddleTile extends BlankSquare implements Cloneable {
     public MiddleTile(){
     }
 

@@ -9,7 +9,7 @@ import java.util.*;
  */
 
 public class LetterBag implements Serializable{
-    private List<Tile> letters;
+    private ArrayList<Tile> letters;
 
     /**
      * Creates a new LetterBag containing every tile to use for the game.
@@ -108,4 +108,14 @@ public class LetterBag implements Serializable{
     public int getSize() {
         return this.letters.size();
     }
+
+
+    public ArrayList<Tile> getLetters() {
+        return this.letters;
+    }
+
+    public void setLetters(ArrayList<Tile> letters) {
+        this.letters = letters;
+    }
+
 }

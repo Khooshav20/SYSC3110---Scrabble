@@ -8,14 +8,14 @@
  */
 
 import javax.swing.*;
-
-import java.awt.ScrollPaneAdjustable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class ScrabbleController implements Serializable{
     private LetterBag letterBag; // Model representing the game state
@@ -23,6 +23,11 @@ public class ScrabbleController implements Serializable{
     private Board board; // Model representing the game state
     private View view;
     private int currentPlayer; // Tracks the index of the current player
+
+    private Stack<GameState> undoStack;
+    private Stack<GameState> redoStack;
+    private GameState buffer;
+
     private int turnsWithoutScore;
 
     /**
@@ -33,6 +38,9 @@ public class ScrabbleController implements Serializable{
      */
     public ScrabbleController (View view, int numPlayers, int numAIPlayers, Square[][] boardArray) throws IOException {
         letterBag = new LetterBag();
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
 
         players = new Player[numPlayers + numAIPlayers];
         for (int i = 0; i < numPlayers; i++){
@@ -50,6 +58,8 @@ public class ScrabbleController implements Serializable{
         turnsWithoutScore = 0;
         currentPlayer = 0;
 
+        addToStack(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
+
         this.view = view;
         
         updateView();
@@ -60,6 +70,9 @@ public class ScrabbleController implements Serializable{
      */
     private void nextPlayer() {
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
+        if (!(players[currentPlayer] instanceof AIPlayer)) {
+            addToStack(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
+        }
     }
 
     /**
@@ -85,7 +98,7 @@ public class ScrabbleController implements Serializable{
             }
 
             
-            //view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            //view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
             //proceed to next turn
             nextPlayer();
 
@@ -98,7 +111,7 @@ public class ScrabbleController implements Serializable{
 
             //end game
             if (players[currentPlayer-1 >= 0 ? currentPlayer-1: players.length-1].getNumTiles() == 0){
-                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard())); 
+                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), (undoStack.size() > 1), !redoStack.empty())); 
             }
             checkAI();
             //move successful
@@ -126,7 +139,7 @@ public class ScrabbleController implements Serializable{
         
         //end game
         if (turnsWithoutScore >= 6){
-            view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+            view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
         }
 
         checkAI();
@@ -163,7 +176,7 @@ public class ScrabbleController implements Serializable{
 
             //end game
             if (turnsWithoutScore >= 6){
-                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+                view.endGame(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
             }
 
             checkAI();
@@ -204,6 +217,7 @@ public class ScrabbleController implements Serializable{
             objectOutputStream.close();
             return true;
         } catch(Exception e){
+            e.printStackTrace();
             return false;
         }
     }
@@ -216,8 +230,105 @@ public class ScrabbleController implements Serializable{
         return temp;
     }
 
+    public boolean undo() {
+        if (undoStack.empty()) {
+            System.out.println("Stack empty, something went wrong");
+            return false;
+        }
+
+        redoStack.add(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
+
+        GameState gs = undoStack.pop();
+        buffer = getCurrentGameState(gs.getPlayers(), gs.getBag(), gs.getBoard(), gs.getCurrentPlayer(), gs.getTurnsWithoutScore());
+
+        players = gs.getPlayers();
+        letterBag = gs.getBag();
+        board.setBoard(gs.getBoard());
+        currentPlayer = gs.getCurrentPlayer();
+        turnsWithoutScore = gs.getTurnsWithoutScore();
+
+        updateView();
+        return undoStack.empty();
+    }
+
+    public boolean redo() {
+        if (redoStack.empty()) {
+            System.out.println("Stack empty, something went wrong");
+            return false;
+        }
+
+        undoStack.add(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
+
+        GameState gs = redoStack.pop();
+        buffer = getCurrentGameState(gs.getPlayers(), gs.getBag(), gs.getBoard(), gs.getCurrentPlayer(), gs.getTurnsWithoutScore());
+
+        players = gs.getPlayers();
+        letterBag = gs.getBag();
+        board.setBoard(gs.getBoard());
+        currentPlayer = gs.getCurrentPlayer();
+        turnsWithoutScore = gs.getTurnsWithoutScore();
+
+        updateView();
+        return redoStack.empty();
+    }
+
+    public GameState getCurrentGameState(Player[] players, LetterBag letterBag, Square[][] mainBoard, int currentPlayer, int turnsWithoutScore) {
+        try {
+            Player[] playersCopy = new Player[players.length];
+
+            for (int i = 0; i < players.length; i++) {
+                playersCopy[i] = (players[i] instanceof AIPlayer) ? new AIPlayer(): new Player();
+                playersCopy[i].rack = (ArrayList<Tile>) players[i].rack.clone();
+                playersCopy[i].addScore(players[i].getScore());
+            }
+
+            if (players[0].rack == playersCopy[0].rack) {
+                System.out.println("player rack equal");
+                System.exit(17);
+            }
+
+            LetterBag letterBagCopy = new LetterBag();
+            letterBagCopy.setLetters((ArrayList<Tile>) letterBag.getLetters().clone());
+
+            if (letterBagCopy.getLetters() == letterBag.getLetters()) {
+                System.out.println("tile bag equal");
+                System.exit(11);
+            }
+
+            Square[][] boardCopy = new Square[15][15];
+
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 15; j++) {
+                    if (mainBoard[i][j] instanceof PremiumTile) boardCopy[i][j] = (PremiumTile) ((PremiumTile) mainBoard[i][j]).clone();
+                    else if (mainBoard[i][j] instanceof MiddleTile) boardCopy[i][j] = new MiddleTile();
+                    else if (mainBoard[i][j] instanceof BlankSquare) boardCopy[i][j] = new BlankSquare();
+                    else if (mainBoard[i][j] instanceof Tile) boardCopy[i][j] = (Tile) ((Tile) mainBoard[i][j]).clone();
+                }
+            }
+
+            if (boardCopy == mainBoard) {
+                System.out.println("board equal");
+                System.exit(53);
+            }
+
+            return new GameState(letterBagCopy, playersCopy, boardCopy, currentPlayer, turnsWithoutScore);
+            
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return null;
+    }
+
+    public void addToStack(GameState gs) {
+        if (buffer != null) {
+            undoStack.push(buffer);
+        }
+        buffer = gs;
+        redoStack = new Stack<>();
+
+    }
+
     public void updateView(){
-        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard()));
+        view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
     }
 
     public void setView(View v){

@@ -12,6 +12,8 @@ public class ScrabbleEvent extends EventObject{
     private int currentPlayer;
     private int numLetters;
     private Square[][] board;
+    private boolean undoEnabled;
+    private boolean redoEnabled;
 
     /**
      * Initializes a ScrabbleEvent with all relevant information about the current game state.
@@ -22,12 +24,14 @@ public class ScrabbleEvent extends EventObject{
      * @param model The object creating this event
      * @param board The board of the current game
      */
-    public ScrabbleEvent(Player[] players, int currentPlayer, int numLetters, ScrabbleController model, Square[][] board){
+    public ScrabbleEvent(Player[] players, int currentPlayer, int numLetters, ScrabbleController model, Square[][] board, boolean undoEnabled, boolean redoEnabled){
         super(model);
         this.players = players;
         this.currentPlayer = currentPlayer;
         this.numLetters = numLetters;
         this.board = board;
+        this.undoEnabled = undoEnabled;
+        this.redoEnabled = redoEnabled;
     }
 
     /**
@@ -59,5 +63,13 @@ public class ScrabbleEvent extends EventObject{
 
     public Square[][] getBoard() {
         return board;
+    }
+
+    public boolean getUndoEnabled() {
+        return this.undoEnabled;
+    }
+
+    public boolean getRedoEnabled() {
+        return this.redoEnabled;
     }
 }

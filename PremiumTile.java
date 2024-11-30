@@ -1,4 +1,6 @@
-public class PremiumTile extends BlankSquare{
+import java.io.Serializable;
+
+public class PremiumTile extends BlankSquare implements Cloneable, Serializable {
     private int multiplier;
     private boolean isWord;
 
@@ -31,4 +33,11 @@ public class PremiumTile extends BlankSquare{
     public String toXML(){
         return "<PremiumTile>\n<multiplier>" + multiplier + "</multiplier>\n<isWord>" + isWord + "</isWord>\n</PremiumTile>";
     }
+ 
+    @Override
+    protected Object clone() 
+        throws CloneNotSupportedException 
+    { 
+        return super.clone(); 
+    } 
 }
