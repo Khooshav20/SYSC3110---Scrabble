@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
  * 
  * @author Marc Fernandes
  * @author Lucas Warburton
+ * @author Alexander Gardiner (101261196)
  * @version 10/11/2024
  */
 public class View extends JFrame implements ActionListener{
@@ -34,6 +35,8 @@ public class View extends JFrame implements ActionListener{
     JMenu boardMenu;
     JMenuItem undoItem;
     JMenuItem redoItem;
+
+    private JLabel timerLabel;
 
     private JPanel LBTileColumn;
 
@@ -183,6 +186,11 @@ public class View extends JFrame implements ActionListener{
 
         redoItem = new JMenuItem("Redo...");
         redoItem.addActionListener(this);
+
+        timerLabel = new JLabel("Time left: 30 seconds");
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(timerLabel, BorderLayout.NORTH);
 
         // initialize ScrabbleController and show frame
         int numPlayers = getPlayers();
@@ -654,6 +662,14 @@ public class View extends JFrame implements ActionListener{
 
         // update after status update
         updateDisplay();
+    }
+
+    /**
+     * Update the time remaining via the Scrabble controller
+     *
+     */
+    public void updateTimerLabel(String text) {
+        timerLabel.setText(text);
     }
 
     /**

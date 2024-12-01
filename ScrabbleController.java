@@ -5,6 +5,7 @@
  * 
  * @author Khooshav Bundhoo (101132063)
  * @author Lucas Warburton (101276823)
+ * @author Alexander Gardiner (101261196)
  */
 
 import javax.swing.*;
@@ -29,6 +30,10 @@ public class ScrabbleController implements Serializable{
     private GameState buffer;
 
     private int turnsWithoutScore;
+
+    private Timer timer;
+
+    private int remainingTime;
 
     /**
      * Constructor to initialize the controller with a game model and view.
@@ -61,8 +66,21 @@ public class ScrabbleController implements Serializable{
         addToStack(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
 
         this.view = view;
-        
+        remainingTime = 30;
         updateView();
+
+        // 30 sec timer for players.
+        timer = new Timer(1000, e -> {
+            remainingTime--;
+            view.updateTimerLabel("Time left: " + remainingTime + " seconds");
+            if (remainingTime <= 0) {
+                timer.stop();
+                JOptionPane.showMessageDialog(view, "Time's up! Passing your turn.");
+                pass();
+            }
+        });
+        timer.start();
+
     }
 
     /**
@@ -72,6 +90,10 @@ public class ScrabbleController implements Serializable{
         currentPlayer = (currentPlayer + 1) % players.length; // Cycle to the next player
         if (!(players[currentPlayer] instanceof AIPlayer)) {
             addToStack(getCurrentGameState(players, letterBag, board.getBoard(), currentPlayer, turnsWithoutScore));
+            remainingTime = 30;
+            timer.restart(); //Reset timer for next player
+        } else {
+            timer.stop(); // Stop timer for AI
         }
     }
 
@@ -97,7 +119,8 @@ public class ScrabbleController implements Serializable{
                 players[currentPlayer].addTiles(letterBag.getTiles(Math.min(moveLetters.length(), letterBag.getSize())));
             }
 
-            
+
+            timer.stop();
             //view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
             //proceed to next turn
             nextPlayer();
@@ -130,6 +153,7 @@ public class ScrabbleController implements Serializable{
      */
     public void pass(){
         //proceed to next turn
+        timer.stop();
         nextPlayer();
         turnsWithoutScore++;
 
@@ -164,6 +188,8 @@ public class ScrabbleController implements Serializable{
 
             //add new tiles to player
             players[currentPlayer].addTiles(exchangeTiles);
+
+            timer.stop();
 
             //proceed to next turn
             nextPlayer();
