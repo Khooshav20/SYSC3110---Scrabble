@@ -162,7 +162,7 @@ Features:
  • Custom Board <br>
 
  - Alexander Gardiner <br>
- •<br>
+ • Timer bonus <br>
 
 
 How to run?
@@ -177,6 +177,6 @@ Testing
 
 Unit tests can be run through your IDE’s testing suite, targeting the accuracy of word placement and scoring functionality.
 
-This README offers a comprehensive overview of the new features and guides users on setup, gameplay, and testing for Milestone 2.
+This README offers a comprehensive overview of the new features and guides users on setup, gameplay, and testing for Milestone 4.
  
 Once done, You are good to go!! Have a great game!
