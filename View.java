@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
  * @author Marc Fernandes
  * @author Lucas Warburton
  * @author Alexander Gardiner (101261196)
- * @version 10/11/2024
+ * @version 12/03/2024
  */
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
@@ -726,6 +726,11 @@ public class View extends JFrame implements ActionListener{
         return -1;
     }
 
+    /**
+     * Asks the user for the name of the file from which the board should be imported, and imports the board.
+     * 
+     * @param board The Board object which will be assigned the layout specified in the file.
+     */
     private static void getBoardInput(Board board){
         while (true){
             try{
