@@ -146,11 +146,13 @@ Features:
 	•	Supports customization of premium square placement (e.g., 2x, 3x letter/word score tiles).
 	•	Players can define custom board configurations in XML or JSON format.
 	•	Enhances replayability by allowing unique game setups.
+    •	Enter "specialBoard.txt" into the prompt to view a preexisting special board.
 
 
  #Responsibilities:
  - Marc Fernandes <br>
  • Undo/Redo <br>
+ • Custom Board <br>
 
  - Khooshav Bundhoo <br>
  • UML <br>
@@ -162,7 +164,8 @@ Features:
  • Custom Board <br>
 
  - Alexander Gardiner <br>
- • Timer bonus <br>
+ • Undo/Redo
+ • Save/Load <br>
 
 
 How to run?
