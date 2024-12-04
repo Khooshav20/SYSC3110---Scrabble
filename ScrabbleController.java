@@ -6,6 +6,7 @@
  * @author Khooshav Bundhoo (101132063)
  * @author Lucas Warburton (101276823)
  * @author Alexander Gardiner (101261196)
+ * @version 12/03/2024
  */
 
 import javax.swing.*;
@@ -234,6 +235,12 @@ public class ScrabbleController implements Serializable{
         }
     }
 
+    /**
+     * Saves the game to a file.
+     * 
+     * @param filename the name of the file to which it should be saved.
+     * @return if the save was successful.
+     */
     public boolean save(String filename){
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(filename);
@@ -248,6 +255,14 @@ public class ScrabbleController implements Serializable{
         }
     }
 
+    /**
+     * Loads a game from a file.
+     * 
+     * @param filename the name of the file from which it should be loaded.
+     * @return The ScrabbleController representing the game that was just loaded.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static ScrabbleController load(String filename) throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(filename);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -256,6 +271,11 @@ public class ScrabbleController implements Serializable{
         return temp;
     }
 
+    /**
+     * Undoes the last player made move.
+     * 
+     * @return Whether the undo was successful.
+     */
     public boolean undo() {
         if (undoStack.empty()) {
             System.out.println("Stack empty, something went wrong");
@@ -277,6 +297,11 @@ public class ScrabbleController implements Serializable{
         return undoStack.empty();
     }
 
+    /**
+     * Redoes the last move that was undone.
+     * 
+     * @return Whether the redo was successful.
+     */
     public boolean redo() {
         if (redoStack.empty()) {
             System.out.println("Stack empty, something went wrong");
@@ -298,6 +323,16 @@ public class ScrabbleController implements Serializable{
         return redoStack.empty();
     }
 
+    /**
+     * Creates an object representing a game state.
+     * 
+     * @param players The array of objects representing the players.
+     * @param letterBag The object respresenting the letter bag.
+     * @param mainBoard The array of squares representing the board.
+     * @param currentPlayer The index of the current player within the players array.
+     * @param turnsWithoutScore The number of consecutive turns without score.
+     * @return The object representing the game state.
+     */
     public GameState getCurrentGameState(Player[] players, LetterBag letterBag, Square[][] mainBoard, int currentPlayer, int turnsWithoutScore) {
         try {
             Player[] playersCopy = new Player[players.length];
@@ -344,19 +379,34 @@ public class ScrabbleController implements Serializable{
         return null;
     }
 
+    /**
+     * Adds a game state to the undo stack, used only in the case that a move is played.
+     * 
+     * @param gs The state to be added to the undo stack.
+     */
     public void addToStack(GameState gs) {
         if (buffer != null) {
             undoStack.push(buffer);
         }
         buffer = gs;
+
+        //clear redo stack because you can only redo if the last move was undo (or redo with multiple states in the redo stack)
         redoStack = new Stack<>();
 
     }
 
+    /**
+     * Updates the view with the current game state.
+     */
     public void updateView(){
         view.handleScrabbleStatusUpdate(new ScrabbleEvent(players, currentPlayer, letterBag.getSize(), this, board.getBoard(), !undoStack.empty(), !redoStack.empty()));
     }
 
+    /**
+     * Sets the view of the controller to a specific View object.
+     * 
+     * @param v The object to be used as the view for this controller.
+     */
     public void setView(View v){
         view = v;
     }
