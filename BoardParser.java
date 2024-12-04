@@ -1,22 +1,31 @@
-import org.xml.sax.Attributes;
+/**
+ * BoardParser is an object with the ability to parse an XML file into an array representing a Scrabble Board.
+ * 
+ * @author Lucas Warburton (101276823)
+ * @author Marc Fernandes (101288346)
+ * @version 12/03/2024
+ */
+
+ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+
 
 public class BoardParser extends DefaultHandler {
     private Square[][] board;
     private StringBuilder elementContent;
 
 
+    /**
+     * When the parser begins the parse a file, it initializes the array in which it will store the board.
+     */
     @Override
     public void startDocument(){
-
         board = new Square[15][15];
         for (int i = 0; i < 15; i++){
             for (int j = 0; j < 15; j++){
@@ -25,6 +34,10 @@ public class BoardParser extends DefaultHandler {
         }
     }
 
+
+    /**
+     * Every time the parser encounters a new element.
+     */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes){
         if(qName.equalsIgnoreCase("MiddleTile")){
@@ -37,11 +50,17 @@ public class BoardParser extends DefaultHandler {
         elementContent = new StringBuilder();
     }
 
+    /**
+     * Functionality to read the text within an element.
+     */
     @Override
     public void characters(char[] ch, int start, int length){
         elementContent.append(ch, start, length);
     }
 
+    /**
+     * Every time the parser gets to the end of an element.
+     */
     @Override
     public void endElement(String uri, String localName, String qName){
         if(qName.equalsIgnoreCase("multiplier")){
@@ -52,6 +71,13 @@ public class BoardParser extends DefaultHandler {
         elementContent = new StringBuilder();
     }
 
+    /**
+     * Parses an XML file into an array representing a board.
+     * 
+     * @param fileName The file containing the XML representing the board.
+     * @return The array representing the board.
+     * @throws IOException
+     */
     public Square[][] readXMLBoardFile(String fileName) throws IOException {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -64,6 +90,11 @@ public class BoardParser extends DefaultHandler {
         }
     }
 
+    /**
+     * Adds a square to the first empty square in the board.
+     * 
+     * @param s
+     */
     private void addSquare(Square s){
         for (int i = 0; i < 15; i++){
             for (int j = 0; j < 15; j++){
@@ -75,6 +106,11 @@ public class BoardParser extends DefaultHandler {
         }
     }
 
+    /**
+     * Gets the last square that was added to the board.
+     * 
+     * @return the last square.
+     */
     private Square getLast(){
         for (int i = 0; i < 15; i++){
             for (int j = 0; j < 15; j++){
