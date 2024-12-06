@@ -29,53 +29,65 @@ public class AIPlayer extends Player{
     public Location generateLongestMove(Board boardObject) {
         Square[][] board = boardObject.getBoard();
         Location longestMove = new Location(0, 0, "", "", false);
-        results = new HashMap<>();
-        // horizontal
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) { 
-                if (board[i][j] instanceof BlankSquare) { //for every empty tile on board
-                    int temp = 0;
-                    for (int k = j; k < 15; k++) {
-                        if (board[i][k] instanceof BlankSquare) temp++; //count empty squares after original tile
-                    }
 
-                    int currentLength = Math.min(7, temp); //set length of word being searched for to max possible
-                    while (isConnectedHorizontal(board, i, j, currentLength) && currentLength > longestMove.tiles.length()) {
-                        String regex = "";
-                        int numLetters = 0;
-
-                        //build regex including only the letters in the word already on the board
-                        for (int k = j - 1; k >= 0 && !(board[i][k] instanceof BlankSquare); k--) regex = board[i][k].getLetter() + regex;
-                        for (int k = j; k + numLetters < 15 && (k < currentLength + j || !(board[i][k + numLetters] instanceof BlankSquare));) {
-                            if (!(board[i][k + numLetters] instanceof BlankSquare)) {
-                                regex += board[i][k + numLetters].getLetter();
-                                numLetters++;
-                            }
-                            else {
-                                regex += ".";
-                                k++;
-                            };
+        if (board[7][7] instanceof MiddleTile){
+            String longestWord = "";
+            for (String word: Board.words){
+                word = word.toUpperCase();
+                if (word.length() > longestWord.length() && hasLetters(word)){
+                    longestWord = word;
+                }
+            }
+            return new Location(7, 7, longestWord, longestWord, true);
+        } else {
+            results = new HashMap<>();
+            // horizontal
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 15; j++) { 
+                    if (board[i][j] instanceof BlankSquare) { //for every empty tile on board
+                        int temp = 0;
+                        for (int k = j; k < 15; k++) {
+                            if (board[i][k] instanceof BlankSquare) temp++; //count empty squares after original tile
                         }
-                        // lowercase regex to allow matching with dictionary
-                        regex = regex.toLowerCase();
 
-                        // find all valid words that could be played with the tiles given
-                        ArrayList<String[]> words = getValidWords(regex);
+                        int currentLength = Math.min(7, temp); //set length of word being searched for to max possible
+                        while (isConnectedHorizontal(board, i, j, currentLength) && currentLength > longestMove.tiles.length()) {
+                            String regex = "";
+                            int numLetters = 0;
 
-                        // try every word, if it works then its a new longest move
-                        for (String[] word: words) {
-                            Tile[] tempTiles = removeLetters(word[1]);
-                            Location tempLocation = new Location(i, j, word[1], word[0], true);
-                            if (boardObject.isValidMove(tempTiles, word[0], tempLocation.location)) { //check if word is a valid move
-                                longestMove = tempLocation;
+                            //build regex including only the letters in the word already on the board
+                            for (int k = j - 1; k >= 0 && !(board[i][k] instanceof BlankSquare); k--) regex = board[i][k].getLetter() + regex;
+                            for (int k = j; k + numLetters < 15 && (k < currentLength + j || !(board[i][k + numLetters] instanceof BlankSquare));) {
+                                if (!(board[i][k + numLetters] instanceof BlankSquare)) {
+                                    regex += board[i][k + numLetters].getLetter();
+                                    numLetters++;
+                                }
+                                else {
+                                    regex += ".";
+                                    k++;
+                                };
+                            }
+                            // lowercase regex to allow matching with dictionary
+                            regex = regex.toLowerCase();
+
+                            // find all valid words that could be played with the tiles given
+                            ArrayList<String[]> words = getValidWords(regex);
+
+                            // try every word, if it works then its a new longest move
+                            for (String[] word: words) {
+                                Tile[] tempTiles = removeLetters(word[1]);
+                                Location tempLocation = new Location(i, j, word[1], word[0], true);
+                                if (boardObject.isValidMove(tempTiles, word[0], tempLocation.location)) { //check if word is a valid move
+                                    longestMove = tempLocation;
+                                    addTiles(tempTiles);
+                                    break;
+                                }
                                 addTiles(tempTiles);
-                                break;
                             }
-                            addTiles(tempTiles);
-                        }
 
-                        // search for shorter words
-                        currentLength--;
+                            // search for shorter words
+                            currentLength--;
+                        }
                     }
                 }
             }

@@ -19,7 +19,7 @@ import java.awt.event.ActionListener;
 public class View extends JFrame implements ActionListener{
     private JPanel mainPanel;
     
-    private static Font font = new Font("Comic Sans MS", Font.BOLD, 16);
+    private static Font font = new Font("Comic Sans MS", Font.BOLD, 14);
 
     private JPanel boardPanel;
     private JButton[][] boardButtons;
@@ -63,7 +63,7 @@ public class View extends JFrame implements ActionListener{
     public View(Square[][] board) throws IOException {
         // set frame parameters
         setTitle("SYSC3110 Scrabble - Group 17");
-        setSize(600, 600);
+        setSize(600, 620);
         setResizable(false);
         
 
