@@ -168,6 +168,19 @@ Features:
  • Save/Load <br>
 
 
+ Bonus Milestone
+
+This milestone adds an optional timed mode to the Scrabble game. 
+
+ Features:
+ - Timer
+
+ Contributors:
+  • Alexander Gardiner <br>
+  • Lucas Warburton <br>
+  • Marc-Antony Fernandes <br>
+  • Khooshav Bundhoo <br>
+
 How to run?
 
  •Install IntelliJ IDEA <br>

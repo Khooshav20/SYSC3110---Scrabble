@@ -60,7 +60,7 @@ public class View extends JFrame implements ActionListener{
      * @param board the starting board
      * @throws IOException if tiles.txt or dictionary.txt is not found.
      */
-    public View(Square[][] board) throws IOException {
+    public View(Square[][] board, boolean isTimed) throws IOException {
         // set frame parameters
         setTitle("SYSC3110 Scrabble - Group 17");
         setSize(600, 620);
@@ -190,11 +190,11 @@ public class View extends JFrame implements ActionListener{
         timerLabel = new JLabel("Time left: 30 seconds");
         timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        this.add(timerLabel, BorderLayout.NORTH);
+        if (isTimed) this.add(timerLabel, BorderLayout.NORTH);
 
         // initialize ScrabbleController and show frame
         int numPlayers = getPlayers();
-        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers), board);
+        sc = new ScrabbleController(this, numPlayers, getAIPlayers(numPlayers), board, isTimed);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -750,6 +750,8 @@ public class View extends JFrame implements ActionListener{
         Board board = new Board();
         board.exportToXMLFile("default_board.txt");
         getBoardInput(board);
-        new View(board.getBoard());
+        String[] options = {"Timed", "Not Timed"};
+        boolean isTimed = JOptionPane.showOptionDialog(null, "Would you like the game to be timed?", null, 0, 2, null, options, options[0]) == 0;
+        new View(board.getBoard(), isTimed);
     }
 }

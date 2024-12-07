@@ -26,6 +26,7 @@ public class ScrabbleController implements Serializable{
     private Board board; // Model representing the game state
     private View view;
     private int currentPlayer; // Tracks the index of the current player
+    private boolean isTimed;
 
     private Stack<GameState> undoStack;
     private Stack<GameState> redoStack;
@@ -43,7 +44,8 @@ public class ScrabbleController implements Serializable{
      * @param numPlayers The number of players
      * @throws IOException If it fails to read dictionary.txt or files.txt
      */
-    public ScrabbleController (View view, int numPlayers, int numAIPlayers, Square[][] boardArray) throws IOException {
+    public ScrabbleController (View view, int numPlayers, int numAIPlayers, Square[][] boardArray, boolean isTimed) throws IOException {
+        this.isTimed = isTimed;
         letterBag = new LetterBag();
 
         undoStack = new Stack<>();
@@ -81,7 +83,7 @@ public class ScrabbleController implements Serializable{
                 pass();
             }
         });
-        timer.start();
+        if (isTimed) timer.start();
 
     }
 
