@@ -8,9 +8,6 @@ import java.util.*;
  * - For horizontal words, the notation is row first then column (e.g., "15K").
  * - For vertical words, the notation is column first then row (e.g., "K15").
  *
- * @author Khooshav Bundhoo (101132063)
- * @author Marc Fernandes (101288346)
- * @author Lucas Warburton (101276823)
  * @version 22/10/2024
  */
 

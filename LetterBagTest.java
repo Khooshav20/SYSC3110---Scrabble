@@ -8,7 +8,6 @@ import java.util.Arrays;
  * Tests the letterBag class, note the testShuffle() method as
  * shuffle() is a private method in letterBag.
  *
- * @author Alexander Gardiner, 101261196
  * @version 08/11/2024
  */
 

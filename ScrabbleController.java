@@ -3,10 +3,6 @@
  * ScrabbleController is responsible for managing interactions between the Scrabble game model and view.
  * It processes user actions, updates the view based on the game state, and controls player turn rotation.
  * 
- * @author Khooshav Bundhoo (101132063)
- * @author Lucas Warburton (101276823)
- * @author Alexander Gardiner (101261196)
- * @author Marc Fernandes (101288346)
  * @version 12/03/2024
  */
 

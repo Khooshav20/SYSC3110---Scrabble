@@ -8,9 +8,6 @@ import java.util.HashMap;
  * evaluates all possible moves and chooses the one that maximizes its score.
  *
  *
- * @author Khooshav Bundhoo (101132063)
- * @author Marc Fernandes (101288346)
- * @author Lucas Warburton (101276823)
  */
 public class AIPlayer extends Player{
     private HashMap<String, ArrayList<String[]>> results;

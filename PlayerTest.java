@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 /**
  * Tests the player class
  *
- * @author Alexander Gardiner, 101261196
  * @version 08/11/2024
  */
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
  * The player class represents a player in a Scrabble game. Each player has a rack of
  * tiles and a score.
  *
- * @author Alexander Gardiner, 101261196
  * @version 20/10/2024
  */
 public class Player implements Serializable{

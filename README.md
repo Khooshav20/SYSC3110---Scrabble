@@ -1,10 +1,7 @@
 # SYSC3110---Scrabble
 Group 17
 @authors:
-- Marc Fernandes
-- Khooshav Bundhoo
-- Lucas Warburton
-- Alexander Gardiner 
+
 
 Scrabble Game
 
@@ -29,20 +26,19 @@ File Descriptions
 - Tile.java: Represents an individual Scrabble tile, including its letter and point value.
 
 #Responsibilities:
-- Marc Fernandes <br>
+
 •Tile.java <br>
 •LetterBag.java <br>
 •Square.java <br>
 
-- Khooshav Bundhoo <br>
  •Board.java <br>
  •README.md <br>
  •Documentation <br>
 
-- Lucas Warburton <br>
+
  •ScrabbleGame.java <br>
   
-- Alexander Gardiner <br>
+
  •Player.java <br>
 
 
@@ -74,19 +70,18 @@ File Descriptions
 
 
 #Responsibilities:
-- Marc Fernandes <br>
+
  •View.java <br>
 
-- Khooshav Bundhoo <br>
+
  •ScrabbleController.java <br>
  •README.md <br>
  •Documentation <br>
 
-- Lucas Warburton <br>
+
  •View.java <br>
  •ScrabbleController.java with View.java integration <br>
- 
-- Alexander Gardiner <br>
+
  •Test cases <br>
 
 
@@ -111,16 +106,16 @@ File Descriptions
  •AI Player <br>
  •Blank Tiles <br>
 
- - Khooshav Bundhoo <br>
+
  •AI Player <br>
  •Documentation <br>
 
- - Lucas Warburton <br>
+
  •Blank Tiles <br>
  •Premium Tiles <br>
  •README <br>
 
- - Alexander Gardiner <br>
+
  •Blank Tile Tests <br>
  •Premium Tile Tests <br>
 
@@ -154,16 +149,16 @@ Features:
  • Undo/Redo <br>
  • Custom Board <br>
 
- - Khooshav Bundhoo <br>
+
  • UML <br>
  • Readme <br>
  • Documentation <br>
 
- - Lucas Warburton <br>
+
  • Save/Load <br>
  • Custom Board <br>
 
- - Alexander Gardiner <br>
+
  • Undo/Redo
  • Save/Load <br>
 
@@ -176,10 +171,7 @@ This milestone adds an optional timed mode to the Scrabble game.
  - Timer
 
  Contributors:
-  • Alexander Gardiner <br>
-  • Lucas Warburton <br>
-  • Marc-Antony Fernandes <br>
-  • Khooshav Bundhoo <br>
+
 
 How to run?
 

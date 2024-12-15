@@ -11,9 +11,6 @@ import java.awt.event.ActionListener;
 /**
  * A View that allows Scrabble to have a Graphical User Interface (GUI).
  * 
- * @author Marc Fernandes (101288346)
- * @author Lucas Warburton (101276823)
- * @author Alexander Gardiner (101261196)
  * @version 12/03/2024
  */
 public class View extends JFrame implements ActionListener{

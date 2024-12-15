@@ -1,8 +1,6 @@
 /**
  * BoardParser is an object with the ability to parse an XML file into an array representing a Scrabble Board.
  * 
- * @author Lucas Warburton (101276823)
- * @author Marc Fernandes (101288346)
  * @version 12/03/2024
  */
 
